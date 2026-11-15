@@ -135,10 +135,53 @@ def e3_table(rs):
     return "\n".join(out)
 
 
+def e8_table(rs):
+    """Interference test: one row per (model, d, n), with the verdict rule fixed in SERVER_RESULTS.md 4.8."""
+    def deep_or_none(r, lo, hi):
+        return deep(r, lo, hi) if str(hi) in r["acc_deep"] else None
+
+    def mean_or_none(xs):
+        xs = [x for x in xs if x is not None]
+        return float(np.mean(xs)) if xs else None
+
+    g = defaultdict(list)
+    for r in rs:
+        if r["tag"] == "e8":
+            g[(r["model"] != "tied", r["d"] if r["model"] == "tied" else 0, r["n"])].append(r)
+    ref = [r for r in rs if r["tag"] == "e1fix" and r["read"] == "square" and r["lr"] == 1e-3]
+    out = ["| 모델 | 상태 | 대입문 n | 끝난 seed | 학습 분포 평균 | 99%에 닿은 seed | 두 체인 5에서 8, seed별 | 두 체인 5에서 8, 99% seed | "
+           "9에서 16, 99% seed | 17에서 32, 99% seed | 99%에 처음 닿은 step 중앙값 | 판정 |", "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    verdict = {}
+    rows = [((False, 64, 16), ref, "제안 layer, 실험 1 고친 설정, 이름 26개")] + \
+           [(k, v, "DeltaNet 2층" if k[0] else "제안 layer, 이름 512개") for k, v in sorted(g.items())]
+    for (is_std, d, n), rs_, label in rows:
+        rs_ = sorted(rs_, key=lambda r: r["seed"])
+        good = [r for r in rs_ if ok(r)]
+        steps = [s for s in (first_ok_step(r) for r in good) if s is not None]
+        d58 = mean_or_none([deep(r, 5, 8) for r in good])
+        v = ""
+        if label.endswith("512개") and len(rs_) >= 3:
+            v = "유지" if len(good) >= 2 and d58 is not None and d58 >= 0.90 else "깨짐"
+            verdict[(d, n)] = v
+        state = f"{d}×{d}" if not is_std else "층마다 head 4개, 16×16"
+        out.append(f"| {label} | {state} | {n} | {len(rs_)} | {pct(np.mean([np.mean(list(r['acc_in_dist'].values())) for r in rs_]))} | "
+                   f"{len(good)}/{len(rs_)} | {', '.join(f'{100 * deep(r, 5, 8):.0f}' for r in rs_[:10])} | {pct(d58)} | "
+                   f"{pct(mean_or_none([deep_or_none(r, 9, 16) for r in good]))} | {pct(mean_or_none([deep_or_none(r, 17, 32) for r in good]))} | "
+                   f"{f'{int(np.median(steps)):,}' if steps else ''} | {v} |")
+    notes = []
+    for d in sorted({d for d, _ in verdict}):
+        ns = sorted(n for dd, n in verdict if dd == d)
+        broke = [n for n in ns if verdict[(d, n)] == "깨짐"]
+        held = [n for n in ns if verdict[(d, n)] == "유지"]
+        notes.append(f"d={d}: 판정이 난 n {', '.join(map(str, ns))}. 유지 {', '.join(map(str, held)) or '없음'}, "
+                     f"깨짐 {', '.join(map(str, broke)) or '없음'}" + (f", 처음 깨진 n은 {min(broke)}." if broke else "."))
+    return "\n".join(out) + ("\n\n" + "  \n".join(notes) if notes else "")
+
+
 def running_table():
     out = ["| 풀 | 작업 | 모델 | 진행 | step당 | 남은 시간, 추정 |", "|---|---|---|---|---|---|"]
     queued = []
-    for d in ("e2_tf12", "poolB", "e2fix", "vt", "vt_fix3", "vt_fix4", "e3_now"):
+    for d in ("e2_tf12", "poolB", "e2fix", "vt", "vt_fix3", "vt_fix4", "e3_now", "e8"):
         plog = os.path.join(ROOT, f"logs/{d}/pool.log")
         if not os.path.exists(plog):
             continue
@@ -196,11 +239,11 @@ def main():
     rs = runs()
     counts = Counter(r["tag"] for r in rs)
     vt_base, vt_fix = vt_tables(rs)
-    parts = dict(e2=e2_table(rs), vt_base=vt_base, vt_fix=vt_fix, e3=e3_table(rs), running=running_table())
+    parts = dict(e2=e2_table(rs), vt_base=vt_base, vt_fix=vt_fix, e3=e3_table(rs), e8=e8_table(rs), running=running_table())
     text = (f"# 자동 상태 보고\n\n생성: {now()}. `tools/make_status.py`가 결과 파일과 풀 로그에서 만든다.\n\n"
             f"끝난 실행 수: {dict(sorted(counts.items()))}\n\n{gpu_check()}\n\n"
             f"## 실험 2\n\n{parts['e2']}\n\n## (b) 기본 실행\n\n{parts['vt_base']}\n\n## (b) 보완\n\n{parts['vt_fix']}\n\n"
-            f"## 실험 3\n\n{parts['e3']}\n\n## 돌고 있는 작업\n\n{parts['running']}\n")
+            f"## 실험 3\n\n{parts['e3']}\n\n## 실험 8, 간섭 시험\n\n{parts['e8']}\n\n## 돌고 있는 작업\n\n{parts['running']}\n")
     open("results/STATUS.md", "w").write(text)
     if args.splice:
         for p in ("SERVER_RESULTS.md", "draft/DRAFT.md"):
