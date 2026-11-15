@@ -21,7 +21,7 @@ for l in sys.stdin:
     r = json.loads(l); ok = all(v >= 0.99 for v in r['acc_in_dist'].values())
     nm = r['model'] + ('/' + r['read'] if r['model'] == 'tied' else ' L%d' % r['L'])
     if r.get('pre'): nm += ' +' + (r.get('pre_kind') or 'tf')
-    if r['tag'] == 'e8': nm += ' d%s n%d' % (r['d'] if r['model'] == 'tied' else '-', r['n'])
+    if r['tag'] in ('e8', 'e8b'): nm += ' d%s n%d names%d' % (r['d'] if r['model'] == 'tied' else '-', r['n'], r['n_names'])
     if r.get('vt'):
         v = r['vt']; nm += ' [' + {(1, 0): 'A', (1, 256): 'B', (3, 0): 'C', (3, 256): 'D'}[(v['name_max'], v['prog_len'])] + ']'
     d = [r['acc_deep'][str(k)] for k in range(1, 9)]

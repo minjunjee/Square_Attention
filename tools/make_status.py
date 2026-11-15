@@ -197,6 +197,28 @@ def e8b_table(rs):
     return "\n".join(out)
 
 
+def oracle_tables():
+    """The intended solution computed without training (interference_oracle.py)."""
+    path = os.path.join(ROOT, "results/oracle_interference.jsonl")
+    if not os.path.exists(path):
+        return ""
+    rows = [json.loads(line) for line in open(path)]
+    ns = (16, 32, 64, 128, 256)
+    by = {(r["d"], r["n_names"], r["n"]): r for r in rows}
+    out = ["| 상태 | 이름 수 | " + " | ".join(f"n={n}" for n in ns) + " |", "|---|---|" + "---|" * len(ns)]
+    for d, k in sorted({(r["d"], r["n_names"]) for r in rows}):
+        cells = []
+        for n in ns:
+            r = by.get((d, k, n))
+            cells.append("" if r is None else f"{100 * r['acc_two_chain']['1']:.0f}, {100 * r['acc_two_chain']['8']:.0f}")
+        out.append(f"| {d}×{d} | {k} | " + " | ".join(cells) + " |")
+    rs_ = ["| 상태 | 이름 수 | r=2 | r=3 | r=4 | r=6 | r=8 |", "|---|---|---|---|---|---|---|"]
+    for r in sorted((r for r in rows if r["acc_depth4_by_r"]), key=lambda r: (r["d"], r["n_names"])):
+        rs_.append(f"| {r['d']}×{r['d']} | {r['n_names']} | " + " | ".join(f"{100 * r['acc_depth4_by_r'][str(x)]:.0f}" for x in (2, 3, 4, 6, 8)) + " |")
+    return ("칸마다 두 체인 깊이 1과 깊이 8의 정확도(%)이다. 시험 때와 같이 r=6, code 한 번 뽑기, 프로그램 500개.\n\n" + "\n".join(out) +
+            "\n\nn=16, 두 체인 깊이 4에서 제곱 횟수 r에 따른 정확도(%). 간섭이 없으면 깊이 4에는 r=2면 충분하다.\n\n" + "\n".join(rs_))
+
+
 def running_table():
     out = ["| 풀 | 작업 | 모델 | 진행 | step당 | 남은 시간, 추정 |", "|---|---|---|---|---|---|"]
     queued = []
@@ -258,11 +280,11 @@ def main():
     rs = runs()
     counts = Counter(r["tag"] for r in rs)
     vt_base, vt_fix = vt_tables(rs)
-    parts = dict(e2=e2_table(rs), vt_base=vt_base, vt_fix=vt_fix, e3=e3_table(rs), e8=e8_table(rs), e8b=e8b_table(rs), running=running_table())
+    parts = dict(e2=e2_table(rs), vt_base=vt_base, vt_fix=vt_fix, e3=e3_table(rs), e8=e8_table(rs), e8b=e8b_table(rs), oracle=oracle_tables(), running=running_table())
     text = (f"# 자동 상태 보고\n\n생성: {now()}. `tools/make_status.py`가 결과 파일과 풀 로그에서 만든다.\n\n"
             f"끝난 실행 수: {dict(sorted(counts.items()))}\n\n{gpu_check()}\n\n"
             f"## 실험 2\n\n{parts['e2']}\n\n## (b) 기본 실행\n\n{parts['vt_base']}\n\n## (b) 보완\n\n{parts['vt_fix']}\n\n"
-            f"## 실험 3\n\n{parts['e3']}\n\n## 실험 8, 간섭 시험\n\n{parts['e8']}\n\n## 실험 8 보완, n=16\n\n{parts['e8b']}\n\n## 돌고 있는 작업\n\n{parts['running']}\n")
+            f"## 실험 3\n\n{parts['e3']}\n\n## 실험 8, 간섭 시험\n\n{parts['e8']}\n\n## 실험 8 보완, n=16\n\n{parts['e8b']}\n\n## 의도한 풀이, 학습 없음\n\n{parts['oracle']}\n\n## 돌고 있는 작업\n\n{parts['running']}\n")
     open("results/STATUS.md", "w").write(text)
     if args.splice:
         for p in ("SERVER_RESULTS.md", "draft/DRAFT.md"):
