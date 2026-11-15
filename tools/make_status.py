@@ -178,10 +178,29 @@ def e8_table(rs):
     return "\n".join(out) + ("\n\n" + "  \n".join(notes) if notes else "")
 
 
+def e8b_table(rs):
+    """Interference follow-up at n = 16: number of names and state size, with the same verdict rule."""
+    g = defaultdict(list)
+    for r in rs:
+        if r["tag"] == "e8b" or (r["tag"] == "e8" and r["model"] == "tied" and r["n"] == 16):
+            g[(r["d"], r["n_names"])].append(r)
+    g[(64, 26)] = [r for r in rs if r["tag"] == "e1fix" and r["read"] == "square" and r["lr"] == 1e-3]
+    out = ["| 상태 | 이름 수 | 끝난 seed | 학습 분포 평균 | 99%에 닿은 seed | 두 체인 5에서 8, seed별 | 두 체인 5에서 8, 99% seed | 판정 |",
+           "|---|---|---|---|---|---|---|---|"]
+    for (d, k), rs_ in sorted(g.items()):
+        rs_ = sorted(rs_, key=lambda r: r["seed"])
+        good = [r for r in rs_ if ok(r)]
+        d58 = float(np.mean([deep(r, 5, 8) for r in good])) if good else None
+        v = ("유지" if len(good) >= 2 and d58 is not None and d58 >= 0.90 else "깨짐") if len(rs_) >= 3 and k != 26 else ""
+        out.append(f"| {d}×{d} | {k}{', 실험 1' if k == 26 else ''} | {len(rs_)} | {pct(np.mean([np.mean(list(r['acc_in_dist'].values())) for r in rs_]))} | "
+                   f"{len(good)}/{len(rs_)} | {', '.join(f'{100 * deep(r, 5, 8):.0f}' for r in rs_[:10])} | {pct(d58)} | {v} |")
+    return "\n".join(out)
+
+
 def running_table():
     out = ["| 풀 | 작업 | 모델 | 진행 | step당 | 남은 시간, 추정 |", "|---|---|---|---|---|---|"]
     queued = []
-    for d in ("e2_tf12", "poolB", "e2fix", "vt", "vt_fix3", "vt_fix4", "e3_now", "e8"):
+    for d in ("e2_tf12", "poolB", "e2fix", "vt", "vt_fix3", "vt_fix4", "e3_now", "e8", "e8b"):
         plog = os.path.join(ROOT, f"logs/{d}/pool.log")
         if not os.path.exists(plog):
             continue
@@ -239,11 +258,11 @@ def main():
     rs = runs()
     counts = Counter(r["tag"] for r in rs)
     vt_base, vt_fix = vt_tables(rs)
-    parts = dict(e2=e2_table(rs), vt_base=vt_base, vt_fix=vt_fix, e3=e3_table(rs), e8=e8_table(rs), running=running_table())
+    parts = dict(e2=e2_table(rs), vt_base=vt_base, vt_fix=vt_fix, e3=e3_table(rs), e8=e8_table(rs), e8b=e8b_table(rs), running=running_table())
     text = (f"# 자동 상태 보고\n\n생성: {now()}. `tools/make_status.py`가 결과 파일과 풀 로그에서 만든다.\n\n"
             f"끝난 실행 수: {dict(sorted(counts.items()))}\n\n{gpu_check()}\n\n"
             f"## 실험 2\n\n{parts['e2']}\n\n## (b) 기본 실행\n\n{parts['vt_base']}\n\n## (b) 보완\n\n{parts['vt_fix']}\n\n"
-            f"## 실험 3\n\n{parts['e3']}\n\n## 실험 8, 간섭 시험\n\n{parts['e8']}\n\n## 돌고 있는 작업\n\n{parts['running']}\n")
+            f"## 실험 3\n\n{parts['e3']}\n\n## 실험 8, 간섭 시험\n\n{parts['e8']}\n\n## 실험 8 보완, n=16\n\n{parts['e8b']}\n\n## 돌고 있는 작업\n\n{parts['running']}\n")
     open("results/STATUS.md", "w").write(text)
     if args.splice:
         for p in ("SERVER_RESULTS.md", "draft/DRAFT.md"):
