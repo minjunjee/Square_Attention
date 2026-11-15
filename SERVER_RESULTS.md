@@ -16,7 +16,7 @@
 | 2, 고친 설정 | 실험 2의 제안 layer를 고친 설정으로 | 완료 | 10/10 | 99%에 닿은 seed 7/10, 두 체인 깊이 5에서 8 평균 99.4%, 모든 seed 평균 96.7% | `results/tables_e2fix.md` |
 | 3 | 같은 block을 반복하는 모델과 비교 | 진행 중 | 4.7절 | 반복 DeltaNet은 반복 한 번에 한 칸, 반복을 늘려도 깊이 8에서 70%. 반복 Transformer는 학습 부족 | `jobs/e3_now.txt` |
 | 5, 6 | 더 긴 프로그램, LEGO 문제 | 보류 | 0 | 11월 15일 23:15 사용자 지시로 우선순위를 (b)로 바꿈 | `jobs/e5_draft.txt`, `jobs/e6_draft.txt` |
-| 7 | 비용과 GPU 가속 | 순전파 완료, 역전파 커널은 미구현 | | layer 전체 순전파: DeltaNet보다 2.6에서 4.7배 느리고, 약 3만 token부터 가장 빠른 attention보다 빠름. PyTorch보다 16에서 66배 빠름. 4.6절 | `results/cost_*.jsonl`, `results/precision_e1fix.json` |
+| 7 | 비용과 GPU 가속 | 순전파 완료, 역전파 커널은 미구현 | | layer 전체 순전파: DeltaNet보다 2.6에서 4.9배 느리고, 약 3만 token부터 가장 빠른 attention보다 빠름, 1M token에서 25배. PyTorch보다 16에서 66배 빠름. 4.6절 | `results/cost_*.jsonl`, `results/precision_e1fix.json` |
 | (b) | 덜 규칙적인 형식에서는 무엇이 부족한가 | 완료 | 27/27 | 깨끗한 형식은 3/3 완벽. 방해 token만 있으면 1/3, 여러 token 이름이면 0/3, 둘 다면 0/3 | `results/tables_vt.md` |
 | (b) 보완 | 앞 layer가 이름을 모아 주면 회복되는가 | 완료 | 27/27 | 여러 token 이름은 DeltaNet 앞 layer로 3/3 회복. 둘 다인 조건은 제곱 읽기 2/6, 한 번 읽기 0/6. 방해 token만 있으면 0/3 | 같음 |
 
@@ -187,17 +187,29 @@ PyTorch 구현은 위치마다 64×64 상태를 메모리에 쓰고 읽느라 �
 
 **상태 생성까지 합친 커널, 순전파만.** chunk마다 상태를 on-chip에 두고 위치를 지나가며 갱신한다. `results/cost_fused.jsonl`. 읽기는 길이와 상관없이 TF32 1.50 ms, bf16 0.66 ms이다. 같은 조건의 순전파는 FlashAttention이 0.06에서 0.63 ms, DeltaNet이 0.17에서 0.37 ms이다. 쓰기, 즉 delta rule은 PyTorch로 1.4에서 21 ms가 걸렸다. 아래에서 이것을 DeltaNet 커널로 바꿨다.
 
-**layer 전체를 각 비교군의 가장 빠른 구현과 비교.** 쓰기, 즉 delta rule을 DeltaNet과 같은 flash-linear-attention 커널로 바꾸고, 그 결과인 chunk 시작 상태와 위치별 값을 바로 읽기 커널에 넘겼다. 이 쓰기 결과는 우리 PyTorch 구현과 일치한다. softmax attention은 PyTorch SDPA의 백엔드 셋 중 가장 빠른 것, DeltaNet은 fla 커널 중 가장 빠른 것을 썼다. 순전파, bf16, head 4개, d=64, r=5이다. 결과는 `results/cost_best.jsonl`과 `results/cost_layer.jsonl`, 코드는 `fused_layer.py`와 `best_baselines.py`이다.
+**layer 전체를 각 비교군의 가장 빠른 구현과 비교.** 쓰기, 즉 delta rule을 DeltaNet과 같은 flash-linear-attention 커널로 바꾸고, 그 결과인 chunk 시작 상태와 위치별 값을 바로 읽기 커널에 넘겼다. 이 쓰기 결과는 우리 PyTorch 구현과 일치한다. softmax attention은 PyTorch SDPA의 백엔드 셋 중 가장 빠른 것, DeltaNet은 fla 커널 중 가장 빠른 것을 썼다. 순전파, bf16, head 4개, d=64, r=5이다. 결과는 `results/cost_best_long.jsonl`과 `results/cost_layer.jsonl`, 코드는 `fused_layer.py`와 `best_baselines.py`이다.
 
 | 길이 T | softmax attention, 가장 빠른 구현 | DeltaNet, 가장 빠른 구현 | **제안 layer** | 제안 대 DeltaNet | 제안 대 attention | 합치기 전 PyTorch | 커널로 빨라진 배수 |
 |---|---|---|---|---|---|---|---|
-| 1,024 | 0.06 ms, FlashAttention | 0.17 ms, chunk | **0.81 ms** | 4.7배 느림 | 13.0배 느림 | 12.8 ms | 16배 |
-| 4,096 | 0.17 ms, cuDNN | 0.19 ms, chunk | **0.88 ms** | 4.5배 느림 | 5.3배 느림 | 19.3 ms | 22배 |
-| 16,384 | 0.57 ms, cuDNN | 0.37 ms, chunk | **1.14 ms** | 3.0배 느림 | 2.0배 느림 | 75.7 ms | 66배 |
-| 65,536 | 6.61 ms, cuDNN | 1.54 ms, chunk | **4.17 ms** | 2.7배 느림 | **1.6배 빠름** |  |  |
-| 131,072 | 24.59 ms, FlashAttention | 3.22 ms, chunk | **8.32 ms** | 2.6배 느림 | **3.0배 빠름** |  |  |
+| 1,024 | 0.07 ms, FlashAttention | 0.17 ms, chunk | **0.81 ms** | 4.9배 느림 | 12.4배 느림 | 12.8 ms | 16배 |
+| 4,096 | 0.17 ms, cuDNN | 0.19 ms, chunk | **0.87 ms** | 4.5배 느림 | 5.2배 느림 | 19.3 ms | 22배 |
+| 16,384 | 0.57 ms, cuDNN | 0.37 ms, chunk | **1.14 ms** | 3.1배 느림 | 2.0배 느림 | 75.7 ms | 66배 |
+| 65,536 | 6.61 ms, cuDNN | 1.53 ms, chunk | **4.16 ms** | 2.7배 느림 | **1.6배 빠름** |  |  |
+| 131,072 | 24.61 ms, FlashAttention | 3.23 ms, chunk | **8.35 ms** | 2.6배 느림 | **2.9배 빠름** |  |  |
+| 262,144 | 95.48 ms, FlashAttention | 6.48 ms, chunk | **16.57 ms** | 2.6배 느림 | **5.8배 빠름** |  |  |
+| 524,288 | 383.06 ms, FlashAttention | 12.92 ms, chunk | **32.98 ms** | 2.6배 느림 | **11.6배 빠름** |  |  |
+| 1,048,576 | 1638.47 ms, FlashAttention | 25.79 ms, chunk | **65.77 ms** | 2.6배 느림 | **24.9배 빠름** |  |  |
 
-제안 layer는 모든 길이에서 DeltaNet보다 2.6배에서 4.7배 느리다. 쓰기가 DeltaNet과 같으므로 구조상 DeltaNet보다 빠를 수 없고, 그 차이가 제곱해서 읽는 비용이다. 길이가 길수록 차이가 줄어드는 것은 DeltaNet의 쓰기도 길이에 비례해 무거워지기 때문이다. softmax attention은 길이의 제곱으로 늘어서, 약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르고 13만 token에서는 3.0배 빠르다. 같은 계산을 PyTorch로 하던 구현보다는 16배에서 66배 빠르다.
+제안 layer는 모든 길이에서 DeltaNet보다 2.6배에서 4.9배 느리다. 쓰기가 DeltaNet과 같으므로 구조상 DeltaNet보다 빠를 수 없고, 그 차이가 깊은 체인을 한 layer에서 따라가는 데 드는 비용이다. 짧은 길이에서 차이가 큰 것은 고정 비용 때문이고, 13만 token부터는 2.6배로 일정하다. softmax attention은 길이가 두 배가 될 때마다 약 4배로 늘어서, 약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르고, 13만 token에서 2.9배, 1M token에서는 25배 빠르다. 1M token에서 한 layer의 순전파는 제안 layer 66 ms, DeltaNet 26 ms, attention 1,638 ms이다.
+
+| 길이 T | softmax attention 메모리 | DeltaNet 메모리 | 제안 layer 메모리 |
+|---|---|---|---|
+| 131,072 | 0.25 GB | 0.56 GB | 0.50 GB |
+| 262,144 | 0.51 GB | 1.13 GB | 1.00 GB |
+| 524,288 | 1.01 GB | 2.25 GB | 2.00 GB |
+| 1,048,576 | 2.02 GB | 4.51 GB | 4.01 GB |
+
+메모리는 입력을 포함한 최대 사용량이고, 세 방법 모두 길이에 비례한다.
 
 학습 한 step, 즉 순전파와 역전파는 아직 크게 느리다. 순전파만 합친 커널이고, 역전파는 chunk마다 PyTorch로 다시 계산하는 메모리 절약형이기 때문이다. 메모리는 1.3 GB 이하로 작다.
 
@@ -303,6 +315,7 @@ e3_now: 시작 27, 끝남 19, 목록 30, 풀 살아 있음
 | 16일 05:15 | 발표용 표 `PRESENTATION.md`를 결과 파일에서 직접 계산하도록 만듦 |
 | 16일 05:31 | 사용자 요청으로 쓰기도 fla 커널로 가속해 layer 전체를 1k에서 131k token까지 측정. 학습 step은 메모리 절약형 역전파로 측정 |
 | 16일 05:33 | 비교군을 각자 가장 빠른 구현으로 다시 측정. 결론은 같음 |
+| 16일 05:40 | 사용자 요청으로 1M token까지 측정. 1M에서 attention 1,638 ms, DeltaNet 26 ms, 제안 layer 66 ms |
 
 ## 7. 민준이 정할 것
 

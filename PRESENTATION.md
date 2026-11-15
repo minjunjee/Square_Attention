@@ -1,6 +1,6 @@
 # PoC 발표용 숫자
 
-생성: 2026-11-16 05:37 KST. `make_presentation.py`가 `results/res_server.jsonl`에서 직접 계산한다. 정확도는 %이고, learning rate는 설정마다 3e-4, 1e-3, 3e-3을 돌려 학습 분포 평균이 가장 높은 것을 골랐다. "99% seed"는 학습 분포의 깊이 1에서 4를 모두 99% 이상 맞힌 seed이다. 두 체인 시험의 깊이 5에서 8은 학습에 나오지 않는다.
+생성: 2026-11-16 05:41 KST. `make_presentation.py`가 `results/res_server.jsonl`에서 직접 계산한다. 정확도는 %이고, learning rate는 설정마다 3e-4, 1e-3, 3e-3을 돌려 학습 분포 평균이 가장 높은 것을 골랐다. "99% seed"는 학습 분포의 깊이 1에서 4를 모두 99% 이상 맞힌 seed이다. 두 체인 시험의 깊이 5에서 8은 학습에 나오지 않는다.
 
 ## 표 1. 효과: 같은 layer에서 읽는 방법만 바꿨을 때
 
@@ -91,17 +91,29 @@
 
 ## 표 6. GPU 가속: 모든 위치에서 읽는 layer 전체의 속도
 
-RTX PRO 6000 Blackwell 한 장을 다른 실행 없이 썼다. head 4개, d=64, r=5, bf16, 순전파. 길이 16,384까지는 한 번에 16,384 token, 그보다 길면 sequence 하나이다. 비교군은 각자 가장 빠른 구현을 썼다. softmax attention은 PyTorch SDPA의 FlashAttention, cuDNN, memory-efficient 백엔드 중 가장 빠른 것이고, DeltaNet은 flash-linear-attention의 chunk와 fused_recurrent 커널 중 가장 빠른 것이다. fla의 fused_chunk 커널은 이 버전에서 호출 형식이 맞지 않아 재지 못했다. 제안 layer는 쓰기(delta rule)를 DeltaNet과 같은 fla 커널로, 읽기를 상태를 on-chip에 둔 채 제곱하는 Triton 커널로 한다. 쓰기가 DeltaNet과 같으므로 제안 layer는 구조상 DeltaNet보다 빠를 수 없다.
+RTX PRO 6000 Blackwell 한 장을 다른 실행 없이 썼다. head 4개, d=64, r=5, bf16, 순전파. 길이 16,384까지는 한 번에 16,384 token, 그보다 길면 sequence 하나이며 1M token까지 쟀다. 비교군은 각자 가장 빠른 구현을 썼다. softmax attention은 PyTorch SDPA의 FlashAttention, cuDNN, memory-efficient 백엔드 중 가장 빠른 것이고, DeltaNet은 flash-linear-attention의 chunk와 fused_recurrent 커널 중 가장 빠른 것이다. fla의 fused_chunk 커널은 이 버전에서 호출 형식이 맞지 않아 재지 못했다. 제안 layer는 쓰기(delta rule)를 DeltaNet과 같은 fla 커널로, 읽기를 상태를 on-chip에 둔 채 제곱하는 Triton 커널로 한다. 쓰기가 DeltaNet과 같으므로 제안 layer는 구조상 DeltaNet보다 빠를 수 없다.
 
 | 길이 T | softmax attention, 가장 빠른 구현 | DeltaNet, 가장 빠른 구현 | **제안 layer** | 제안 대 DeltaNet | 제안 대 attention | 합치기 전 PyTorch | 커널로 빨라진 배수 |
 |---|---|---|---|---|---|---|---|
-| 1,024 | 0.06 ms, FlashAttention | 0.17 ms, chunk | **0.81 ms** | 4.7배 느림 | 13.0배 느림 | 12.8 ms | 16배 |
-| 4,096 | 0.17 ms, cuDNN | 0.19 ms, chunk | **0.88 ms** | 4.5배 느림 | 5.3배 느림 | 19.3 ms | 22배 |
-| 16,384 | 0.57 ms, cuDNN | 0.37 ms, chunk | **1.14 ms** | 3.0배 느림 | 2.0배 느림 | 75.7 ms | 66배 |
-| 65,536 | 6.61 ms, cuDNN | 1.54 ms, chunk | **4.17 ms** | 2.7배 느림 | **1.6배 빠름** |  |  |
-| 131,072 | 24.59 ms, FlashAttention | 3.22 ms, chunk | **8.32 ms** | 2.6배 느림 | **3.0배 빠름** |  |  |
+| 1,024 | 0.07 ms, FlashAttention | 0.17 ms, chunk | **0.81 ms** | 4.9배 느림 | 12.4배 느림 | 12.8 ms | 16배 |
+| 4,096 | 0.17 ms, cuDNN | 0.19 ms, chunk | **0.87 ms** | 4.5배 느림 | 5.2배 느림 | 19.3 ms | 22배 |
+| 16,384 | 0.57 ms, cuDNN | 0.37 ms, chunk | **1.14 ms** | 3.1배 느림 | 2.0배 느림 | 75.7 ms | 66배 |
+| 65,536 | 6.61 ms, cuDNN | 1.53 ms, chunk | **4.16 ms** | 2.7배 느림 | **1.6배 빠름** |  |  |
+| 131,072 | 24.61 ms, FlashAttention | 3.23 ms, chunk | **8.35 ms** | 2.6배 느림 | **2.9배 빠름** |  |  |
+| 262,144 | 95.48 ms, FlashAttention | 6.48 ms, chunk | **16.57 ms** | 2.6배 느림 | **5.8배 빠름** |  |  |
+| 524,288 | 383.06 ms, FlashAttention | 12.92 ms, chunk | **32.98 ms** | 2.6배 느림 | **11.6배 빠름** |  |  |
+| 1,048,576 | 1638.47 ms, FlashAttention | 25.79 ms, chunk | **65.77 ms** | 2.6배 느림 | **24.9배 빠름** |  |  |
 
-제안 layer는 모든 길이에서 DeltaNet보다 2.6배에서 4.7배 느리다. 시간이 token 수에 비례하는 반면 softmax attention은 길이의 제곱으로 늘어서, 약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르다. 13만 token에서 제안 layer의 메모리는 0.77 GB이다.
+제안 layer는 모든 길이에서 DeltaNet보다 2.6배에서 4.9배 느리다. 시간이 token 수에 비례하는 반면 softmax attention은 길이의 제곱으로 늘어서, 약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르고, 1M token에서는 25배 빠르다. 길이가 두 배가 될 때 attention은 약 4배, 제안 layer와 DeltaNet은 2배로 늘어난다.
+
+| 길이 T | softmax attention 메모리 | DeltaNet 메모리 | 제안 layer 메모리 |
+|---|---|---|---|
+| 131,072 | 0.25 GB | 0.56 GB | 0.50 GB |
+| 262,144 | 0.51 GB | 1.13 GB | 1.00 GB |
+| 524,288 | 1.01 GB | 2.25 GB | 2.00 GB |
+| 1,048,576 | 2.02 GB | 4.51 GB | 4.01 GB |
+
+메모리는 입력을 포함한 최대 사용량이다. 세 방법 모두 길이에 비례한다.
 
 | 읽기 커널만, 학습된 상태 65,536개 | 시간 | 처리량, 추정 | float64 기준과 cosine 0.99 이상 |
 |---|---|---|---|

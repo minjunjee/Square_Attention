@@ -156,8 +156,9 @@ for line in open("results/cost_layer.jsonl"):
     r = json.loads(line)
     layer[r["T"]] = r                                                # the last measurement of each length
 unfused = {r["T"]: r["ms"] for r in map(json.loads, open("results/cost_fused.jsonl")) if r.get("op", "").startswith("unfused")}
+import os
 best = {}
-for line in open("results/cost_best.jsonl"):
+for line in open("results/cost_best_long.jsonl" if os.path.exists("results/cost_best_long.jsonl") else "results/cost_best.jsonl"):
     r = json.loads(line)
     best[r["T"]] = r                                                 # the last measurement of each length
 
@@ -174,7 +175,7 @@ def ratio(a, b):
 names = {"sdpa_flash": "FlashAttention", "sdpa_cudnn": "cuDNN", "sdpa_efficient": "memory-efficient",
          "delta_chunk": "chunk", "delta_fused_recurrent": "fused_recurrent", "delta_fused_chunk": "fused_chunk"}
 out += ["## 표 6. GPU 가속: 모든 위치에서 읽는 layer 전체의 속도", "",
-        "RTX PRO 6000 Blackwell 한 장을 다른 실행 없이 썼다. head 4개, d=64, r=5, bf16, 순전파. 길이 16,384까지는 한 번에 16,384 token, 그보다 길면 sequence 하나이다. "
+        "RTX PRO 6000 Blackwell 한 장을 다른 실행 없이 썼다. head 4개, d=64, r=5, bf16, 순전파. 길이 16,384까지는 한 번에 16,384 token, 그보다 길면 sequence 하나이며 1M token까지 쟀다. "
         "비교군은 각자 가장 빠른 구현을 썼다. softmax attention은 PyTorch SDPA의 FlashAttention, cuDNN, memory-efficient 백엔드 중 가장 빠른 것이고, "
         "DeltaNet은 flash-linear-attention의 chunk와 fused_recurrent 커널 중 가장 빠른 것이다. fla의 fused_chunk 커널은 이 버전에서 호출 형식이 맞지 않아 재지 못했다. "
         "제안 layer는 쓰기(delta rule)를 DeltaNet과 같은 fla 커널로, 읽기를 상태를 on-chip에 둔 채 제곱하는 Triton 커널로 한다. "
@@ -191,8 +192,15 @@ for T in sorted(best):
                f"{f'{un:.1f} ms' if un else ''} | {f'{un / ours:.0f}배' if un else ''} |")
 slow = [best[T]["ours_layer_bf16"] / fastest(best[T], ("delta_chunk", "delta_fused_chunk", "delta_fused_recurrent"))[0] for T in best]
 out += ["", f"제안 layer는 모든 길이에서 DeltaNet보다 {min(slow):.1f}배에서 {max(slow):.1f}배 느리다. 시간이 token 수에 비례하는 반면 softmax attention은 길이의 제곱으로 늘어서, "
-        "약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르다. 13만 token에서 제안 layer의 메모리는 "
-        + f"{layer[max(layer)]['ours_layer_peak_gb']:.2f} GB이다.", "",
+        f"약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르고, 1M token에서는 {fastest(best[max(best)], ('sdpa_flash', 'sdpa_cudnn', 'sdpa_efficient'))[0] / best[max(best)]['ours_layer_bf16']:.0f}배 빠르다. "
+        "길이가 두 배가 될 때 attention은 약 4배, 제안 layer와 DeltaNet은 2배로 늘어난다.", "",
+        "| 길이 T | softmax attention 메모리 | DeltaNet 메모리 | 제안 layer 메모리 |", "|---|---|---|---|"]
+for T in sorted(best):
+    r = best[T]
+    if T >= 131072:
+        att_k = fastest(r, ("sdpa_flash", "sdpa_cudnn", "sdpa_efficient"))[1]
+        out.append(f"| {T:,} | {r[att_k + '_gb']:.2f} GB | {r['delta_chunk_gb']:.2f} GB | {r['ours_layer_bf16_gb']:.2f} GB |")
+out += ["", "메모리는 입력을 포함한 최대 사용량이다. 세 방법 모두 길이에 비례한다.", "",
         "| 읽기 커널만, 학습된 상태 65,536개 | 시간 | 처리량, 추정 | float64 기준과 cosine 0.99 이상 |", "|---|---|---|---|"]
 for k, nm in (("torch fp32", "PyTorch fp32"), ("torch bf16", "PyTorch bf16"), ("fused tf32", "합친 Triton 커널 TF32"), ("fused bf16", "**합친 Triton 커널 bf16**")):
     r = kern[k]

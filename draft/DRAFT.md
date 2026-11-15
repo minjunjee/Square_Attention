@@ -12,7 +12,7 @@ Wu, Geiger, Millière(ICML 2025)의 변수 binding 문제에서, 모든 모델�
 
 변수 이름이 여러 token이고 사이에 의미 없는 token이 끼는, 덜 규칙적인 형식에서는 제안 layer가 무너졌다. 학습된 layer를 들여다보니 부족한 것은 제곱해서 읽는 부분이 아니라, 여러 token짜리 이름을 key와 value 하나로 만드는 부분이었다. 앞에 DeltaNet layer 하나를 두면 여러 token 이름 조건에서는 세 seed 모두 회복했고, 방해 token까지 있는 조건에서는 제곱해서 읽을 때만 일부 seed가 회복했다. 방해 token 문제는 아직 풀지 못했다.
 
-또 하나의 기여는 GPU 구현이다. 언어 모델처럼 모든 위치에서 읽으려면 위치마다 64×64 행렬을 r번 곱해야 해서, PyTorch로 짜면 매우 느리다. 위치별 상태를 on-chip에 둔 채 r번 제곱하는 Triton 커널을 만들고, 쓰기는 DeltaNet 커널에 맡겨 layer 전체를 GPU 커널로 묶었다. 읽기 커널은 tensor core에서 초당 137에서 227 TFLOP를 내고, layer 전체의 순전파는 PyTorch 구현보다 16배에서 66배 빠르다. DeltaNet보다는 2.6배에서 4.7배 느리지만, 시간이 token 수에 비례해서 약 3만 token부터 가장 빠른 softmax attention 구현보다 빠르고 13만 token에서는 3배 빠르다.
+또 하나의 기여는 GPU 구현이다. 언어 모델처럼 모든 위치에서 읽으려면 위치마다 64×64 행렬을 r번 곱해야 해서, PyTorch로 짜면 매우 느리다. 위치별 상태를 on-chip에 둔 채 r번 제곱하는 Triton 커널을 만들고, 쓰기는 DeltaNet 커널에 맡겨 layer 전체를 GPU 커널로 묶었다. 읽기 커널은 tensor core에서 초당 137에서 227 TFLOP를 내고, layer 전체의 순전파는 PyTorch 구현보다 16배에서 66배 빠르다. DeltaNet보다는 2.6배에서 4.9배 느리지만, 시간이 token 수에 비례해서 약 3만 token부터 가장 빠른 softmax attention 구현보다 빠르고 1M token에서는 25배 빠르다.
 
 ## 1. 문제
 
@@ -171,13 +171,25 @@ _자동 갱신 2026-11-16 05:35 KST_
 
 | 길이 T | softmax attention, 가장 빠른 구현 | DeltaNet, 가장 빠른 구현 | **제안 layer** | 제안 대 DeltaNet | 제안 대 attention | 합치기 전 PyTorch | 커널로 빨라진 배수 |
 |---|---|---|---|---|---|---|---|
-| 1,024 | 0.06 ms, FlashAttention | 0.17 ms, chunk | **0.81 ms** | 4.7배 느림 | 13.0배 느림 | 12.8 ms | 16배 |
-| 4,096 | 0.17 ms, cuDNN | 0.19 ms, chunk | **0.88 ms** | 4.5배 느림 | 5.3배 느림 | 19.3 ms | 22배 |
-| 16,384 | 0.57 ms, cuDNN | 0.37 ms, chunk | **1.14 ms** | 3.0배 느림 | 2.0배 느림 | 75.7 ms | 66배 |
-| 65,536 | 6.61 ms, cuDNN | 1.54 ms, chunk | **4.17 ms** | 2.7배 느림 | **1.6배 빠름** |  |  |
-| 131,072 | 24.59 ms, FlashAttention | 3.22 ms, chunk | **8.32 ms** | 2.6배 느림 | **3.0배 빠름** |  |  |
+| 1,024 | 0.07 ms, FlashAttention | 0.17 ms, chunk | **0.81 ms** | 4.9배 느림 | 12.4배 느림 | 12.8 ms | 16배 |
+| 4,096 | 0.17 ms, cuDNN | 0.19 ms, chunk | **0.87 ms** | 4.5배 느림 | 5.2배 느림 | 19.3 ms | 22배 |
+| 16,384 | 0.57 ms, cuDNN | 0.37 ms, chunk | **1.14 ms** | 3.1배 느림 | 2.0배 느림 | 75.7 ms | 66배 |
+| 65,536 | 6.61 ms, cuDNN | 1.53 ms, chunk | **4.16 ms** | 2.7배 느림 | **1.6배 빠름** |  |  |
+| 131,072 | 24.61 ms, FlashAttention | 3.23 ms, chunk | **8.35 ms** | 2.6배 느림 | **2.9배 빠름** |  |  |
+| 262,144 | 95.48 ms, FlashAttention | 6.48 ms, chunk | **16.57 ms** | 2.6배 느림 | **5.8배 빠름** |  |  |
+| 524,288 | 383.06 ms, FlashAttention | 12.92 ms, chunk | **32.98 ms** | 2.6배 느림 | **11.6배 빠름** |  |  |
+| 1,048,576 | 1638.47 ms, FlashAttention | 25.79 ms, chunk | **65.77 ms** | 2.6배 느림 | **24.9배 빠름** |  |  |
 
-제안 layer는 모든 길이에서 DeltaNet보다 2.6배에서 4.7배 느리다. 쓰기가 DeltaNet과 같으므로 구조상 DeltaNet보다 빠를 수 없고, 그 차이가 깊은 체인을 한 layer에서 따라가는 데 드는 비용이다. 길이가 길수록 차이가 줄어드는 것은 DeltaNet의 쓰기도 길이에 비례해 무거워지기 때문이다. softmax attention은 길이의 제곱으로 늘어서, 약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르고 13만 token에서는 3.0배 빠르다. 같은 계산을 PyTorch로 하던 구현보다는 16배에서 66배 빠르다. 13만 token에서 제안 layer의 메모리는 0.77 GB이다.
+제안 layer는 모든 길이에서 DeltaNet보다 2.6배에서 4.9배 느리다. 쓰기가 DeltaNet과 같으므로 구조상 DeltaNet보다 빠를 수 없고, 그 차이가 깊은 체인을 한 layer에서 따라가는 데 드는 비용이다. 짧은 길이에서 차이가 큰 것은 고정 비용 때문이고, 13만 token부터는 2.6배로 일정하다. softmax attention은 길이가 두 배가 될 때마다 약 4배로 늘어서, 약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르고, 13만 token에서 2.9배, 1M token에서는 25배 빠르다. 1M token에서 한 layer의 순전파는 제안 layer 66 ms, DeltaNet 26 ms, attention 1,638 ms이다.
+
+| 길이 T | softmax attention 메모리 | DeltaNet 메모리 | 제안 layer 메모리 |
+|---|---|---|---|
+| 131,072 | 0.25 GB | 0.56 GB | 0.50 GB |
+| 262,144 | 0.51 GB | 1.13 GB | 1.00 GB |
+| 524,288 | 1.01 GB | 2.25 GB | 2.00 GB |
+| 1,048,576 | 2.02 GB | 4.51 GB | 4.01 GB |
+
+메모리는 입력을 포함한 최대 사용량이고, 세 방법 모두 길이에 비례한다. 같은 계산을 PyTorch로 하던 구현보다는 16배에서 66배 빠르다.
 
 **정밀도.** tensor core를 쓰려면 낮은 정밀도로 계산해야 한다. fp32로 학습한 attention 설정 모델 10개를 TF32와 bf16으로 평가했다. TF32는 두 체인 깊이 2에서 8 정확도를 모든 seed에서 0.3%p 이내로 유지했다. bf16은 7개 seed에서 같았지만, 2개 seed에서 2.1%p와 4.7%p 떨어졌다. 무작위로 만든 상태에서는 TF32와 bf16 결과가 기준과 크게 달랐으므로, 낮은 정밀도가 괜찮은 것은 학습된 상태의 성질 덕분이다.
 
@@ -237,5 +249,5 @@ _자동 갱신 2026-11-16 05:35 KST_
 | 한계 2의 r=5 진단 | `logs/diag/ind_by_r_e1_lr1e-3.txt` |
 | 4.5 정밀도 | `results/precision_e1fix.json`, 코드 `precision_eval.py` |
 | 4.5 합친 커널 | `results/cost_kernel.jsonl`, 코드 `squared_read_triton.py` |
-| 4.5 layer 전체, 가장 빠른 비교군 | `results/cost_best.jsonl`, `results/cost_layer.jsonl`, 코드 `fused_layer.py`, `best_baselines.py` |
+| 4.5 layer 전체, 가장 빠른 비교군 | `results/cost_best_long.jsonl`, `results/cost_layer.jsonl`, 코드 `fused_layer.py`, `best_baselines.py` |
 | 모든 실행의 원자료 | `results/res_server.jsonl` |

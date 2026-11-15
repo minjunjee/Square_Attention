@@ -20,22 +20,32 @@ from fused_layer import inputs, layer_forward, timeit
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--lengths", type=int, nargs="+", default=[1024, 4096, 16384, 65536, 131072])
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
     gpu_guard.check()
     from fla.ops.delta_rule import chunk_delta_rule, fused_chunk_delta_rule, fused_recurrent_delta_rule
     H, d = 4, 64
-    for T in (1024, 4096, 16384, 65536, 131072):
+    for T in args.lengths:
         B = max(1, 16384 // T)
+        steps, warm = (10, 3) if T <= 131072 else (3, 1)
+
+        def time_mem(fn):
+            torch.cuda.empty_cache()
+            torch.cuda.reset_peak_memory_stats()
+            ms = timeit(fn, steps=steps, warm=warm)
+            return round(ms, 3), round(torch.cuda.max_memory_allocated() / 2 ** 30, 3)
         q, k, v, beta = inputs(B, T, H, d, torch.bfloat16)
         qh, kh, vh = (x.transpose(1, 2) for x in (q, k, v))
         res = dict(T=T, B=B, tokens=B * T)
         with torch.no_grad():
             for name, be in (("sdpa_flash", SDPBackend.FLASH_ATTENTION), ("sdpa_efficient", SDPBackend.EFFICIENT_ATTENTION),
                              ("sdpa_cudnn", SDPBackend.CUDNN_ATTENTION)):
+                if name == "sdpa_efficient" and T > 131072:
+                    continue                                         # always the slowest backend up to 131k
                 try:
                     with sdpa_kernel([be]):
-                        res[name] = round(timeit(lambda: F.scaled_dot_product_attention(qh, kh, vh, is_causal=True)), 3)
+                        res[name], res[name + "_gb"] = time_mem(lambda: F.scaled_dot_product_attention(qh, kh, vh, is_causal=True))
                 except Exception as e:                               # noqa: BLE001
                     res[name] = f"unavailable: {type(e).__name__}"
             for name, fn in (("delta_chunk", chunk_delta_rule), ("delta_fused_chunk", fused_chunk_delta_rule),
@@ -43,10 +53,10 @@ def main():
                 if name == "delta_fused_recurrent" and T > 16384:
                     continue                                         # sequential over time: slow at long lengths
                 try:
-                    res[name] = round(timeit(lambda: fn(q, k, v, beta)[0]), 3)
+                    res[name], res[name + "_gb"] = time_mem(lambda: fn(q, k, v, beta)[0])
                 except Exception as e:                               # noqa: BLE001
                     res[name] = f"unavailable: {type(e).__name__}"
-            res["ours_layer_bf16"] = round(timeit(lambda: layer_forward(q, k, v, beta, 5, "bf16")), 3)
+            res["ours_layer_bf16"], res["ours_layer_bf16_gb"] = time_mem(lambda: layer_forward(q, k, v, beta, 5, "bf16"))
         print(json.dumps(res), flush=True)
         if args.out:
             with open(args.out, "a") as f:
