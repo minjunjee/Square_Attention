@@ -1,6 +1,13 @@
 # Square_Attention
 
-minjunjee와 daehanwon(원대한)이 함께 진행하는 프로젝트다. 같은 방식으로 진행하는 프로젝트가 두 개 더 있고(`ComplexiT_WoT`, `Flexible_WSP`), 세 프로젝트가 같은 서버의 GPU를 나눠 쓴다. 아래 규칙은 세 repo에 똑같이 들어 있다.
+minjunjee와 daehanwon(원대한)이 함께 진행하는 프로젝트다. 같은 방식으로 진행하는 프로젝트가 두 개 더 있고(`ComplexiT_WoT`, `Flexible_WSP`), 세 프로젝트가 같은 서버의 GPU를 나눠 쓴다.
+
+이 파일은 초안(preprint)이다. 세 repo가 같은 내용에서 출발했고, 이후로는 이 repo의 필요에 따라 따로 고쳐 나간다. 다른 두 repo의 `CLAUDE.md`와 같게 유지할 필요는 없다.
+
+## 시간
+
+- 시간에 관한 말은 모두 KST 기준으로 한다. 보고, 기록, 커밋 메시지, 일정 이야기가 모두 해당한다.
+- 서버 시계는 UTC다. 현재 시각은 `TZ=Asia/Seoul date`로 확인하고, 로그나 git에 찍힌 UTC 시각도 KST로 바꿔서 말한다.
 
 ## Branch
 
