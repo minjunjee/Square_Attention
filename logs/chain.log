@@ -1,0 +1,12 @@
+2026-11-15 09:36:32 e1 done: chosen lr 0.001, 4 of 10 seeds reach 99% at every depth
+2026-11-15 09:36:32 fewer than half the seeds reach 99%: experiment 4 runs first (25 jobs)
+2026-11-15 09:36:32 starting poolA (e2_tf12, 3 per GPU) and poolB (140 jobs, 5 per GPU)
+2026-11-15 10:34:24 e4 done; choice: --tap_attn 8 (details in logs/choose_fix.txt)
+2026-11-15 10:34:24 starting e1fix (60 jobs, 3 per GPU)
+2026-11-15 23:15:28 KST user priority for the 09:00 KST draft: experiment (b) variable tracking. Deferred: tf12 jobs 7-20 (jobs/tf12_deferred.txt), experiments 5 and 6 (chain stopped before starting). GPUs 6 and 7 not to be used.
+2026-11-15 14:26:18 e1fix done: chosen lr 0.001, 9 of 10 seeds reach 99%
+2026-11-15 14:26:18 starting e2fix (10 jobs, 3 per GPU)
+2026-11-15 23:29:39 KST started experiment (b) variable tracking: 27 jobs, 4 per GPU on GPUs 4 and 5
+2026-11-15 23:56:32 KST started (b) follow-up: proposed layer after one Transformer layer (--pre 1), square and once, condition D, 3 seeds, 2 per GPU
+2026-11-16 00:19:18 KST started (b) follow-up 2: --pre 1 square on conditions B and C, 3 seeds, 2 per GPU
+2026-11-16 00:42:32 KST stopped vt_fix2 (TF pre-layer on B and C; would stay stuck like TF4 at 30k steps); started vt_fix3: DeltaNet or conv pre-layer, 15 jobs, 3 per GPU
