@@ -38,4 +38,4 @@ CUDA_VISIBLE_DEVICES=<GPU UUID> .venv/bin/python poc_fair.py --model tied --read
 
 ## 상태
 
-이 branch는 11월 16일 01:50 KST 기준의 스냅샷이다. 실험 2(충분히 학습한 표준 모델과의 비교)와 변수 추적 변형 실험이 서버에서 계속 돌고 있다. 체크포인트(`ckpt/`)와 실행별 로그는 용량 때문에 올리지 않았고, 모든 실행의 숫자는 `results/res_server.jsonl`에 있다. 일부 스크립트에는 서버의 절대 경로 `/home/minjun_dev/poc_squared_read`가 남아 있다.
+이 branch는 11월 16일 03:25 KST 기준의 스냅샷이다. 실험 2(충분히 학습한 표준 모델과의 비교)와 변수 추적 변형 실험이 서버에서 계속 돌고 있다. 체크포인트(`ckpt/`)와 실행별 로그는 용량 때문에 올리지 않았고, 모든 실행의 숫자는 `results/res_server.jsonl`에 있다. 일부 스크립트에는 서버의 절대 경로 `/home/minjun_dev/poc_squared_read`가 남아 있다.

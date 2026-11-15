@@ -2,3 +2,4 @@
 2026-11-15 10:34:24 starting e1fix (60 jobs, 3 per GPU)
 2026-11-15 14:26:18 e1fix done: chosen lr 0.001, 9 of 10 seeds reach 99%
 2026-11-15 14:26:18 starting e2fix (10 jobs, 3 per GPU)
+2026-11-15 17:29:24 e2fix done

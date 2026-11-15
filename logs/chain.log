@@ -11,3 +11,6 @@
 2026-11-16 00:19:18 KST started (b) follow-up 2: --pre 1 square on conditions B and C, 3 seeds, 2 per GPU
 2026-11-16 00:42:32 KST stopped vt_fix2 (TF pre-layer on B and C; would stay stuck like TF4 at 30k steps); started vt_fix3: DeltaNet or conv pre-layer, 15 jobs, 3 per GPU
 2026-11-16 01:42:05 KST reordered the not-yet-read part of jobs/poolB.txt: DeltaNet 2 layers, Transformer 4 layers, DeltaNet 4 and 8 layers, LSTM, then experiment 3 (same jobs, order only)
+2026-11-16 02:24:55 KST started vt_fix4: DeltaNet pre-layer, square and once, condition D, seeds 3-5 (more seeds for the recovery ratio)
+2026-11-15 17:29:24 e2fix done
+2026-11-16 02:51:14 KST moved experiment 3 (30 jobs) out of the poolB queue into jobs/e3_now.txt and started it now, 4 per GPU, in parallel with the rest of experiment 2
