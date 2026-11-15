@@ -1,6 +1,7 @@
 #!/bin/bash
 # One-screen status of the server runs.
 cd "$(dirname "$0")/.."
+ROOT=$(pwd -P)
 echo "== $(TZ=Asia/Seoul date '+%F %T KST')"
 python3 - <<'PY'
 import json, collections
@@ -17,6 +18,6 @@ for d in e2_tf12 poolB e1fix e2fix e5e6; do
 done
 echo "chain (last 3):"; tail -3 logs/chain.log | sed 's/^/   /'
 nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv,noheader | sed 's/^/   gpu /'
-echo "my processes per GPU: $(nvidia-smi --query-compute-apps=pid,gpu_uuid --format=csv,noheader | while IFS=', ' read p g; do case "$(readlink /proc/$p/cwd 2>/dev/null)" in /home/minjun_dev/poc_squared_read*) echo $g;; esac; done | sort | uniq -c | tr '\n' ' ')"
-echo "other users' or sessions' processes on GPUs 4-7: $(nvidia-smi --query-compute-apps=pid,gpu_uuid --format=csv,noheader | while IFS=', ' read p g; do c=$(readlink /proc/$p/cwd 2>/dev/null); case "$c" in /home/minjun_dev/poc_squared_read*) ;; *) echo "$g:$p"; esac; done | tr '\n' ' ')"
+echo "my processes per GPU: $(nvidia-smi --query-compute-apps=pid,gpu_uuid --format=csv,noheader | while IFS=', ' read p g; do case "$(readlink /proc/$p/cwd 2>/dev/null)" in "$ROOT"*) echo $g;; esac; done | sort | uniq -c | tr '\n' ' ')"
+echo "other users' or sessions' processes on GPUs 4-7: $(nvidia-smi --query-compute-apps=pid,gpu_uuid --format=csv,noheader | while IFS=', ' read p g; do c=$(readlink /proc/$p/cwd 2>/dev/null); case "$c" in "$ROOT"*) ;; *) echo "$g:$p"; esac; done | tr '\n' ' ')"
 errs=$(grep -l "Traceback\|Killed\|out of memory" logs/*/[0-9]*.log 2>/dev/null | wc -l); echo "logs with Traceback/Killed/OOM: $errs"

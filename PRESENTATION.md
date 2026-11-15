@@ -1,6 +1,6 @@
 # PoC 발표용 숫자
 
-생성: 2026-11-16 06:19 KST. `make_presentation.py`가 `results/res_server.jsonl`에서 직접 계산한다. 정확도는 %이고, learning rate는 설정마다 3e-4, 1e-3, 3e-3을 돌려 학습 분포 평균이 가장 높은 것을 골랐다. "99% seed"는 학습 분포의 깊이 1에서 4를 모두 99% 이상 맞힌 seed이다. 두 체인 시험의 깊이 5에서 8은 학습에 나오지 않는다.
+생성: 2026-11-16 06:20 KST. `make_presentation.py`가 `results/res_server.jsonl`에서 직접 계산한다. 정확도는 %이고, learning rate는 설정마다 3e-4, 1e-3, 3e-3을 돌려 학습 분포 평균이 가장 높은 것을 골랐다. "99% seed"는 학습 분포의 깊이 1에서 4를 모두 99% 이상 맞힌 seed이다. 두 체인 시험의 깊이 5에서 8은 학습에 나오지 않는다.
 
 ## 표 1. 효과: 같은 layer에서 읽는 방법만 바꿨을 때
 

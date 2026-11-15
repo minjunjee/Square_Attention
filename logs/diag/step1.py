@@ -6,7 +6,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-sys.path.insert(0, "/home/minjun_dev/poc_squared_read")
+sys.path.insert(0, "/home/minjun_dev/Introduction_LLM/Square_Attention")
 import poc_fair as P  # noqa: E402
 
 torch.set_num_threads(1)

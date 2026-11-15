@@ -1,12 +1,12 @@
 """Diagnostic only (not used for any choice): in-distribution accuracy of saved e1 square models at r = 4, 5, 6."""
 import glob, re, sys, types
 import numpy as np, torch
-sys.path.insert(0, "/home/minjun_dev/poc_squared_read")
+sys.path.insert(0, "/home/minjun_dev/Introduction_LLM/Square_Attention")
 import poc_fair as P
 torch.set_num_threads(4)
 args = types.SimpleNamespace(D_train=4, n=16, m=4)
 print("file | taps key/value/read (softmax at scale 10) | in-dist at r=4 | r=5 | r=6")
-for f in sorted(glob.glob("/home/minjun_dev/poc_squared_read/ckpt/e1_square_lr1e-3_s*.pt")):
+for f in sorted(glob.glob("/home/minjun_dev/Introduction_LLM/Square_Attention/ckpt/e1_square_lr1e-3_s*.pt")):
     seed = int(re.search(r"_s(\d+)\.pt", f).group(1))
     m = P.Tied(16, 4, read="square", gate_ctx=True)
     m.load_state_dict(torch.load(f, map_location="cpu")); m.tap_scale = 10.0
