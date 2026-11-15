@@ -6,7 +6,7 @@ limit=${1:-540}
 n0=$(wc -l < results/res_server.jsonl)
 crash0=$(grep -l "Traceback\|Killed\|out of memory" logs/*/[0-9]*.log 2>/dev/null | wc -l)
 for ((t = 0; t < limit; t += 15)); do
-  [ "$(wc -l < results/res_server.jsonl)" -gt "$n0" ] && sleep 20 && break
+  : # new results no longer end the wait early
   [ "$(grep -l 'Traceback\|Killed\|out of memory' logs/*/[0-9]*.log 2>/dev/null | wc -l)" -gt "$crash0" ] && break
   sleep 15
 done

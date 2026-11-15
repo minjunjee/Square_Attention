@@ -114,6 +114,27 @@ def vt_tables(rs):
     return "\n".join(b), "\n".join(f)
 
 
+def e3_table(rs):
+    g = defaultdict(list)
+    for r in rs:
+        if r["tag"] == "e3":
+            nm = ("DeltaNet block" if r["model"] == "delta" else "Transformer block") + \
+                 (f", 학습 때 {r['loops_train'][0]}에서 {r['loops_train'][1]}번" if r.get("loops_train") else f", 학습 때 {r['loops']}번")
+            g[(nm, r["lr"])].append(r)
+    out = ["| 모델 | lr | 끝난 seed | 학습 분포 평균 | 99%에 닿은 seed | 두 체인 5에서 8, 기본 반복 횟수 | 반복 1, 2, 4, 8, 16번일 때 두 체인 5에서 8 평균 |",
+           "|---|---|---|---|---|---|---|"]
+    for (nm, lr), rs_ in sorted(g.items()):
+        by = defaultdict(list)
+        for r in rs_:
+            for k, v in r.get("acc_deep_by_loops", {}).items():
+                by[int(k)].append(np.mean([v[str(d)] for d in range(5, 9)]))
+        sweep = ", ".join(f"{100 * np.mean(by[k]):.0f}" for k in (1, 2, 4, 8, 16) if k in by)
+        out.append(f"| {nm} | {lr:g} | {', '.join(str(r['seed']) for r in sorted(rs_, key=lambda r: r['seed']))} | "
+                   f"{pct(np.mean([np.mean(list(r['acc_in_dist'].values())) for r in rs_]))} | {sum(map(ok, rs_))}/{len(rs_)} | "
+                   f"{pct(np.mean([deep(r, 5, 8) for r in rs_]))} | {sweep} |")
+    return "\n".join(out)
+
+
 def running_table():
     out = ["| 풀 | 작업 | 모델 | 진행 | step당 | 남은 시간, 추정 |", "|---|---|---|---|---|---|"]
     queued = []
@@ -175,11 +196,11 @@ def main():
     rs = runs()
     counts = Counter(r["tag"] for r in rs)
     vt_base, vt_fix = vt_tables(rs)
-    parts = dict(e2=e2_table(rs), vt_base=vt_base, vt_fix=vt_fix, running=running_table())
+    parts = dict(e2=e2_table(rs), vt_base=vt_base, vt_fix=vt_fix, e3=e3_table(rs), running=running_table())
     text = (f"# 자동 상태 보고\n\n생성: {now()}. `tools/make_status.py`가 결과 파일과 풀 로그에서 만든다.\n\n"
             f"끝난 실행 수: {dict(sorted(counts.items()))}\n\n{gpu_check()}\n\n"
             f"## 실험 2\n\n{parts['e2']}\n\n## (b) 기본 실행\n\n{parts['vt_base']}\n\n## (b) 보완\n\n{parts['vt_fix']}\n\n"
-            f"## 돌고 있는 작업\n\n{parts['running']}\n")
+            f"## 실험 3\n\n{parts['e3']}\n\n## 돌고 있는 작업\n\n{parts['running']}\n")
     open("results/STATUS.md", "w").write(text)
     if args.splice:
         for p in ("SERVER_RESULTS.md", "draft/DRAFT.md"):
