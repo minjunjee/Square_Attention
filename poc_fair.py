@@ -53,13 +53,14 @@ EQ, NL, HASH, COL = 36, 37, 38, 39
 V = 40
 ONE, PLUS, MINUS = LET + 1, LET + 4, LET + 5                     # lego task: digit ids reused for '1', '+', '-'
 VAR_T, PAD = 40, 41                                              # vt task: 'VAR' and padding; noise words follow, V grows
+NAMES = np.arange(LET)                                           # token ids of variable names; --n_names adds ids after V
 
 
 # ----------------------------------------------------------------------------- data
 def gen_lines(rng, B, n, D_cap, plan=None):
     """Assignment lines in program order. plan (B, n): 0 ordinary line, 1 chain A, 2 chain B."""
     ar = np.arange(B)
-    lhs = np.argsort(rng.random((B, LET)), axis=1)[:, :n]            # every variable is assigned once
+    lhs = NAMES[np.argsort(rng.random((B, len(NAMES))), axis=1)[:, :n]]   # every variable is assigned once
     rhs = np.zeros((B, n), np.int64)
     dep = np.zeros((B, n), np.int64)
     val = np.zeros((B, n), np.int64)
@@ -525,15 +526,18 @@ def evaluate(model, args, rng, dev, r_eval, loops_eval=None, n_eval=2000):
     if getattr(args, "task", "bind") == "vt":
         mk = lambda *a, **k: make_vt(*a, name_min=args.name_min, name_max=args.name_max, prog_len=args.prog_len,
                                      n_noise=args.n_noise, **k)
+    chunk = getattr(args, "eval_chunk", None)                         # evaluate in pieces to bound memory on long programs
+    predict = lambda tok: torch.cat([model(torch.from_numpy(tok[i:i + (chunk or len(tok))]).to(dev), **kw)[:, 0]
+                                     for i in range(0, len(tok), chunk or len(tok))]).argmax(-1).cpu().numpy()
     with torch.no_grad():
         for D in range(1, args.D_train + 1):
             tok, lab, qd, _ = mk(rng, n_eval, args.n, args.m, args.D_train, q0_depth=D)
-            pred = model(torch.from_numpy(tok).to(dev), **kw)[:, 0].argmax(-1).cpu().numpy()
+            pred = predict(tok)
             ok = qd[:, 0] == D
             ind[D] = round(float((pred[ok] == lab[ok, 0]).mean()), 4)
-        for D in range(1, args.n // 2 + 1):
+        for D in range(1, min(args.n // 2, getattr(args, "deep_max", None) or args.n) + 1):
             tok, lab, qd, n_end = mk(rng, n_eval, args.n, args.m, args.D_train, twin_depth=D)
-            pred = model(torch.from_numpy(tok).to(dev), **kw)[:, 0].argmax(-1).cpu().numpy()
+            pred = predict(tok)
             deep[D] = round(float((pred == lab[:, 0]).mean()), 4)
             guess[D] = round(float((1.0 / n_end).mean()), 4)
     model.train()
@@ -541,7 +545,7 @@ def evaluate(model, args, rng, dev, r_eval, loops_eval=None, n_eval=2000):
 
 
 def main():
-    global V
+    global V, NAMES
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="tied", choices=["tied", "delta", "tf", "lstm"])
     ap.add_argument("--read", default="square", choices=["square", "sum", "once", "iter"])
@@ -563,6 +567,10 @@ def main():
     ap.add_argument("--pre", type=int, default=0, help="tied only: this many standard causal layers before the fast-weight layer")
     ap.add_argument("--pre_kind", default="tf", choices=["tf", "delta", "conv"], help="tied only: kind of the layers given by --pre")
     ap.add_argument("--n", type=int, default=16)
+    ap.add_argument("--n_names", type=int, default=LET,
+                    help="bind task only: number of distinct variable names; names beyond the 26 letters get new token ids")
+    ap.add_argument("--deep_max", type=int, default=None, help="deepest two-chain test depth (default n // 2)")
+    ap.add_argument("--eval_chunk", type=int, default=None, help="evaluate this many programs per forward pass (default all)")
     ap.add_argument("--m", type=int, default=4)
     ap.add_argument("--D_train", type=int, default=4)
     ap.add_argument("--dm", type=int, default=64)
@@ -599,6 +607,10 @@ def main():
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     line = 5 if args.task == "lego" else 4
     pos, T = None, None
+    if args.n_names != LET:                                          # more names than letters: interference test
+        assert args.task == "bind" and args.n_names > LET and args.n <= args.n_names
+        NAMES = np.concatenate([np.arange(LET), np.arange(V, V + args.n_names - LET)])
+        V = V + args.n_names - LET
     if args.task == "vt":
         V = PAD + 1 + args.n_noise
         T, pos = vt_layout(args.n, args.m, args.name_max, args.prog_len)
@@ -679,6 +691,7 @@ def main():
                    tap_entropy=args.tap_entropy, tap_attn=args.tap_attn, task=args.task, n_tr=args.n_tr if args.task == "lego" else None,
                    vt=dict(name_min=args.name_min, name_max=args.name_max, prog_len=args.prog_len, n_noise=args.n_noise) if args.task == "vt" else None,
                    signed=args.signed, pre=args.pre, pre_kind=args.pre_kind if args.pre else None,
+                   n_names=args.n_names, deep_max=args.deep_max,
                    acc_in_dist=ind, acc_deep=deep, guess_deep=guess, log=log, curve=curve)
     if args.model == "tied":
         with torch.no_grad():
