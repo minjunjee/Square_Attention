@@ -11,6 +11,7 @@ for ((t = 0; t < limit; t += 15)); do
   sleep 15
 done
 .venv/bin/python tools/make_status.py --splice > /dev/null 2>&1 || echo "make_status failed"
+.venv/bin/python make_presentation.py > /dev/null 2>&1 || echo "make_presentation failed"
 echo "== $(TZ=Asia/Seoul date '+%F %T KST')"
 crash=$(grep -l "Traceback\|Killed\|out of memory" logs/*/[0-9]*.log 2>/dev/null | wc -l)
 [ "$crash" -gt "$crash0" ] && echo "NEW CRASH LOGS:" && grep -l "Traceback\|Killed\|out of memory" logs/*/[0-9]*.log

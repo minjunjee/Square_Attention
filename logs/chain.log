@@ -14,3 +14,4 @@
 2026-11-16 02:24:55 KST started vt_fix4: DeltaNet pre-layer, square and once, condition D, seeds 3-5 (more seeds for the recovery ratio)
 2026-11-15 17:29:24 e2fix done
 2026-11-16 02:51:14 KST moved experiment 3 (30 jobs) out of the poolB queue into jobs/e3_now.txt and started it now, 4 per GPU, in parallel with the rest of experiment 2
+2026-11-15 21:17:08 poolA and poolB finished
