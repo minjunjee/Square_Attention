@@ -12,7 +12,7 @@ Wu, Geiger, Millière(ICML 2025)의 변수 binding 문제에서, 모든 모델�
 
 변수 이름이 여러 token이고 사이에 의미 없는 token이 끼는, 덜 규칙적인 형식에서는 제안 layer가 무너졌다. 학습된 layer를 들여다보니 부족한 것은 제곱해서 읽는 부분이 아니라, 여러 token짜리 이름을 key와 value 하나로 만드는 부분이었다. 앞에 DeltaNet layer 하나를 두면 여러 token 이름 조건에서는 세 seed 모두 회복했고, 방해 token까지 있는 조건에서는 제곱해서 읽을 때만 일부 seed가 회복했다. 방해 token 문제는 아직 풀지 못했다.
 
-또 하나의 기여는 GPU 구현이다. 언어 모델처럼 모든 위치에서 읽으려면 위치마다 64×64 행렬을 r번 곱해야 해서, PyTorch로 짜면 매우 느리다. 위치별 상태를 on-chip에 둔 채 r번 제곱하는 Triton 커널을 만들고, 쓰기는 DeltaNet 커널에 맡겨 layer 전체를 GPU 커널로 묶었다. 읽기 커널은 tensor core에서 초당 137에서 227 TFLOP를 내고, layer 전체의 순전파는 PyTorch 구현보다 16배에서 66배 빠르다. DeltaNet보다는 2.6배에서 4.7배 느리지만, 시간이 token 수에 비례해서 약 3만 token부터 가장 빠른 softmax attention 구현보다 빠르고 13만 token에서는 3배 빠르다. 역전파 커널은 아직 없어서 학습은 느리다.
+또 하나의 기여는 GPU 구현이다. 언어 모델처럼 모든 위치에서 읽으려면 위치마다 64×64 행렬을 r번 곱해야 해서, PyTorch로 짜면 매우 느리다. 위치별 상태를 on-chip에 둔 채 r번 제곱하는 Triton 커널을 만들고, 쓰기는 DeltaNet 커널에 맡겨 layer 전체를 GPU 커널로 묶었다. 읽기 커널은 tensor core에서 초당 137에서 227 TFLOP를 내고, layer 전체의 순전파는 PyTorch 구현보다 16배에서 66배 빠르다. DeltaNet보다는 2.6배에서 4.7배 느리지만, 시간이 token 수에 비례해서 약 3만 token부터 가장 빠른 softmax attention 구현보다 빠르고 13만 token에서는 3배 빠르다.
 
 ## 1. 문제
 
@@ -154,40 +154,20 @@ _자동 갱신 2026-11-16 05:35 KST_
 
 ### 4.5 GPU에서 얼마나 빠른가
 
-지금까지의 실험은 질문 위치 네 곳에서만 상태를 읽었다. 언어 모델로 쓰려면 모든 위치에서 읽어야 하고, 그러면 위치마다 64×64 상태 S_t를 만들어 r번 제곱해야 한다. 한 위치의 한 head에 드는 연산은 r × 2d³으로, r=5, d=64이면 약 2.6 MFLOP이다. DeltaNet의 chunk 방식 보통 읽기보다 수십 배 많을 것으로 추정되고, causal softmax attention의 2Td와 같아지는 길이는 T가 약 2만이다.
+지금까지의 실험은 질문 위치 네 곳에서만 상태를 읽었다. 언어 모델로 쓰려면 모든 위치에서 읽어야 하고, 그러면 위치마다 64×64 상태 S_t를 만들어 r번 제곱해야 한다. 한 위치의 한 head에 드는 연산은 r × 2d³으로, r=5, d=64이면 약 2.6 MFLOP이다. DeltaNet의 보통 읽기보다 수십 배 많고, causal softmax attention의 2Td와 같아지는 길이는 T가 약 2만이다. 이 절의 측정은 모두 순전파이고, RTX PRO 6000 Blackwell 한 장에서 다른 실행을 모두 멈추고 쟀다.
 
-이것이 실제로 얼마인지 GPU 5번 하나에서 다른 실행을 모두 멈추고 쟀다. layer 하나의 순전파와 역전파이고, 한 번에 16,384 token, head 4개, d=64, r=5이다. FlashAttention은 torch의 SDPA, DeltaNet은 flash-linear-attention의 chunk 커널을 썼고 둘 다 bf16이다. 제곱 읽기는 PyTorch로 chunk마다 위치별 상태를 만들어 batched 행렬곱으로 제곱한다.
+**읽기 커널.** PyTorch로 짜면 위치마다 64×64 행렬을 메모리에 쓰고 읽느라 느리다. 64×64 상태를 on-chip 메모리에 둔 채 r번 제곱하고 정규화해서 읽기까지 한 번에 하는 Triton 커널을 만들었다. 학습된 모델이 실제 프로그램에서 만든 상태 65,536개를 r=5로 읽었다.
 
-| 길이 T | FlashAttention | DeltaNet | 제곱 읽기 fp32 | 제곱 읽기 TF32 | 제곱 읽기 bf16 | 순서대로 곱하기 TF32 |
-|---|---|---|---|---|---|---|
-| 256 | 0.14 ms | 0.56 ms | 150 ms | 149 ms | 79 ms | 164 ms |
-| 1,024 | 0.23 ms | 0.56 ms | 122 ms | 118 ms | 56 ms | 147 ms |
-| 4,096 | 0.59 ms | 0.64 ms | 103 ms | 100 ms | 97 ms | 394 ms |
-| 16,384 | 1.94 ms | 1.36 ms | 404 ms | 408 ms | 422 ms | 1,711 ms |
-| 최대 메모리 | 0.09 GB | 0.13 GB | 11~12 GB | 11~12 GB | 5.7~6.1 GB | 2.3~2.9 GB |
-
-지금 구현의 제곱 읽기는 DeltaNet보다 100배에서 310배 느리고 메모리를 40배에서 90배 쓴다. 차이에는 두 원인이 섞여 있다. 하나는 위에서 계산한 구조적인 연산량이다. 다른 하나는 구현이다. 같은 연산량을 FlashAttention은 초당 54에서 248 TFLOP로 처리하는데, 제곱 읽기는 1에서 9 TFLOP에 그친다. 이 수치는 측정 시간과 연산량 공식으로 계산한 추정이다. 위치마다 64×64 행렬을 메모리에 쓰고 읽는 데 시간이 대부분 들고, 그래서 TF32를 켜도 빨라지지 않는다. 구현 쪽 격차를 확인하려고, 64×64 상태를 on-chip 메모리에 둔 채 r번 제곱하고 정규화해서 읽기까지 한 번에 하는 Triton 커널을 만들었다. 순전파만 구현했다. 학습된 모델이 실제 프로그램에서 만든 상태 65,536개를 r=5로 읽는 데 걸린 시간은 다음과 같다.
-
-| 구현 | 시간 | 처리량, 추정 | 읽은 vector가 float64 기준과 cosine 0.99 이상인 비율 |
+| 읽기 커널만, 학습된 상태 65,536개 | 시간 | 처리량, 추정 | float64 기준과 cosine 0.99 이상 |
 |---|---|---|---|
-| PyTorch fp32 | 19.06 ms | 9.0 TFLOP/s | 100% |
-| PyTorch TF32 | 19.04 ms | 9.0 TFLOP/s | 100% |
-| PyTorch bf16 | 10.09 ms | 17.0 TFLOP/s | 100% |
-| 합친 커널 fp32 | 23.23 ms | 7.4 TFLOP/s | 100% |
-| 합친 커널 TF32 | 1.26 ms | 137 TFLOP/s | 100% |
-| 합친 커널 bf16 | 0.76 ms | 227 TFLOP/s | 100% |
+| PyTorch fp32 | 19.06 ms | 9 TFLOP/s | 100% |
+| PyTorch bf16 | 10.09 ms | 17 TFLOP/s | 100% |
+| 합친 Triton 커널 TF32 | 1.26 ms | 137 TFLOP/s | 100% |
+| **합친 Triton 커널 bf16** | 0.76 ms | 227 TFLOP/s | 100% |
 
-합친 커널은 tensor core를 써서 PyTorch 구현보다 15배에서 25배 빠르고, 처리량이 FlashAttention과 같은 수준이다. 따라서 위 표의 격차 대부분은 구현 탓이었다.
+합친 커널은 tensor core를 써서 PyTorch 구현보다 15배에서 25배 빠르고, 처리량이 FlashAttention과 같은 수준이다. 결과는 낮은 정밀도에서도 float64 기준과 같았다.
 
-이 커널은 위치별 상태를 미리 만들어 메모리에 둔 상태에서 시작한다. 그래서 상태를 만드는 것까지 커널 안으로 옮겼다. 프로그램 하나가 한 head의 한 chunk를 맡아 chunk 시작 상태를 on-chip에 올리고, 위치를 차례로 지나며 S에 u_t k_t^T를 더한 뒤 그 복사본을 r번 제곱해서 읽는다. 위치별 상태는 메모리에 한 번도 쓰이지 않는다. 쓰기, 즉 delta rule로 u_t와 chunk 시작 상태를 구하는 부분은 PyTorch로 chunk마다 계산했다. 순전파만 같은 조건에서 쟀다.
-
-| 길이 T | FlashAttention | DeltaNet | 쓰기, PyTorch | 읽기, 합친 커널 TF32 | 읽기, 합친 커널 bf16 | 합치기 전 전체 |
-|---|---|---|---|---|---|---|
-| 1,024 | 0.06 ms | 0.17 ms | 1.44 ms | 1.50 ms | 0.66 ms | 12.8 ms |
-| 4,096 | 0.18 ms | 0.19 ms | 5.57 ms | 1.50 ms | 0.66 ms | 19.3 ms |
-| 16,384 | 0.63 ms | 0.37 ms | 21.3 ms | 1.50 ms | 0.66 ms | 75.7 ms |
-
-**layer 전체를 각 비교군의 가장 빠른 구현과 비교.** 쓰기, 즉 delta rule을 DeltaNet과 같은 flash-linear-attention 커널로 바꾸고, 그 결과인 chunk 시작 상태와 위치별 값을 바로 읽기 커널에 넘겼다. 이 쓰기 결과는 우리 PyTorch 구현과 일치한다. softmax attention은 PyTorch SDPA의 백엔드 셋 중 가장 빠른 것, DeltaNet은 fla 커널 중 가장 빠른 것을 썼다. 순전파, bf16, head 4개, d=64, r=5이다. 결과는 `results/cost_best.jsonl`과 `results/cost_layer.jsonl`, 코드는 `fused_layer.py`와 `best_baselines.py`이다.
+**layer 전체.** 위치별 상태도 메모리에 쓰지 않도록, 프로그램 하나가 한 head의 한 chunk를 맡아 chunk 시작 상태를 on-chip에 올리고 위치를 차례로 지나며 S에 u_t k_t^T를 더한 뒤 그 복사본을 r번 제곱해서 읽게 했다. 쓰기, 즉 delta rule은 DeltaNet과 같은 flash-linear-attention 커널에 맡기고, 그 결과인 chunk 시작 상태와 위치별 값을 바로 읽기 커널에 넘겼다. 이 쓰기 결과는 우리 PyTorch 구현과 일치한다. 비교군은 각자 가장 빠른 구현을 썼다. softmax attention은 PyTorch SDPA의 백엔드 셋 중 가장 빠른 것, DeltaNet은 fla 커널 중 가장 빠른 것이다. bf16, head 4개, d=64, r=5이다.
 
 | 길이 T | softmax attention, 가장 빠른 구현 | DeltaNet, 가장 빠른 구현 | **제안 layer** | 제안 대 DeltaNet | 제안 대 attention | 합치기 전 PyTorch | 커널로 빨라진 배수 |
 |---|---|---|---|---|---|---|---|
@@ -197,21 +177,11 @@ _자동 갱신 2026-11-16 05:35 KST_
 | 65,536 | 6.61 ms, cuDNN | 1.54 ms, chunk | **4.17 ms** | 2.7배 느림 | **1.6배 빠름** |  |  |
 | 131,072 | 24.59 ms, FlashAttention | 3.22 ms, chunk | **8.32 ms** | 2.6배 느림 | **3.0배 빠름** |  |  |
 
-제안 layer는 모든 길이에서 DeltaNet보다 2.6배에서 4.7배 느리다. 쓰기가 DeltaNet과 같으므로 구조상 DeltaNet보다 빠를 수 없고, 그 차이가 제곱해서 읽는 비용이다. 길이가 길수록 차이가 줄어드는 것은 DeltaNet의 쓰기도 길이에 비례해 무거워지기 때문이다. softmax attention은 길이의 제곱으로 늘어서, 약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르고 13만 token에서는 3.0배 빠르다. 같은 계산을 PyTorch로 하던 구현보다는 16배에서 66배 빠르다.
+제안 layer는 모든 길이에서 DeltaNet보다 2.6배에서 4.7배 느리다. 쓰기가 DeltaNet과 같으므로 구조상 DeltaNet보다 빠를 수 없고, 그 차이가 깊은 체인을 한 layer에서 따라가는 데 드는 비용이다. 길이가 길수록 차이가 줄어드는 것은 DeltaNet의 쓰기도 길이에 비례해 무거워지기 때문이다. softmax attention은 길이의 제곱으로 늘어서, 약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르고 13만 token에서는 3.0배 빠르다. 같은 계산을 PyTorch로 하던 구현보다는 16배에서 66배 빠르다. 13만 token에서 제안 layer의 메모리는 0.77 GB이다.
 
-학습 한 step, 즉 순전파와 역전파는 아직 크게 느리다. 순전파만 합친 커널이고, 역전파는 chunk마다 PyTorch로 다시 계산하는 메모리 절약형이기 때문이다. 메모리는 1.3 GB 이하로 작다.
+**정밀도.** tensor core를 쓰려면 낮은 정밀도로 계산해야 한다. fp32로 학습한 attention 설정 모델 10개를 TF32와 bf16으로 평가했다. TF32는 두 체인 깊이 2에서 8 정확도를 모든 seed에서 0.3%p 이내로 유지했다. bf16은 7개 seed에서 같았지만, 2개 seed에서 2.1%p와 4.7%p 떨어졌다. 무작위로 만든 상태에서는 TF32와 bf16 결과가 기준과 크게 달랐으므로, 낮은 정밀도가 괜찮은 것은 학습된 상태의 성질 덕분이다.
 
-| 학습 한 step, 순전파와 역전파 | FlashAttention | DeltaNet | 제안 layer |
-|---|---|---|---|
-| 길이 1,024 | 0.23 ms | 0.55 ms | 124 ms |
-| 길이 4,096 | 0.59 ms | 0.65 ms | 116 ms |
-| 길이 16,384 | 1.93 ms | 1.39 ms | 446 ms |
-
-합친 역전파 커널은 다음 과제이다. r번의 제곱과 정규화를 위치마다 on-chip에서 다시 계산해 거꾸로 미분하고, 그 gradient를 chunk 안에서 역방향으로 모아 DeltaNet의 역전파 커널로 넘기는 구조가 된다.
-
-tensor core를 쓰려면 낮은 정밀도로 계산해야 한다. fp32로 학습한 attention 설정 모델 10개를 TF32와 bf16으로 평가했다. TF32는 두 체인 깊이 2에서 8 정확도를 모든 seed에서 0.3%p 이내로 유지했다. bf16은 7개 seed에서 같았지만, 2개 seed에서 2.1%p와 4.7%p 떨어졌다.
-
-따라서 모든 위치, 모든 head에서 제곱해서 읽는 것은 현실적이지 않다. 깊은 조회가 필요한 일부 head에만 쓰거나, 정해진 위치에서만 읽거나, 제곱용 head의 차원을 줄이는 형태가 필요하다. 연산량은 d의 세제곱과 r에 비례하므로 d=32이면 8분의 1이 된다.
+정리하면, 제곱해서 읽기는 GPU에서 attention과 같은 수준의 효율로 돌릴 수 있고, 긴 문맥에서는 attention보다 싸다. 비용은 d의 세제곱과 r에 비례하므로, 깊은 조회가 필요한 일부 head에만 쓰거나 그 head의 차원을 줄이면 DeltaNet과의 차이를 더 줄일 수 있다.
 
 ### 4.6 결과는 계산 순서에 민감하다
 
@@ -251,7 +221,7 @@ _자동 갱신 2026-11-16 05:35 KST_
 1. 간섭 시험. 상태 차원은 그대로 두고 변수 수를 수백 개로, 체인 깊이를 더 늘려 정확도가 언제 무너지는지 잰다. 규모를 키울 때 가장 큰 위험이고, 합성 문제로 싸게 할 수 있다.
 2. 같은 합성 문제를 프로그램 전체에 대한 다음 token 예측으로, 모든 위치에서 읽게 학습한다. key와 value의 공간을 어떻게 맞출지도 여기서 정한다. 자연어 사전학습 없이 언어 모델 안의 부품이라는 조건을 시험하는 단계이다.
 3. 같은 block을 반복하는 모델, Gated DeltaNet 같은 최근 hybrid 구조를 같은 합성 문제에서 비교한다.
-4. 작은 hybrid 언어 모델에서 제곱해서 읽는 head의 유무만 바꿔 학습한다. 이때 역전파 커널이 필요하다.
+4. 작은 hybrid 언어 모델에서 제곱해서 읽는 head의 유무만 바꿔 학습한다.
 5. RULER의 변수 추적 과제와 multi-hop 질의응답으로 평가한다.
 
 ## 부록 A. 숫자의 출처
@@ -265,9 +235,7 @@ _자동 갱신 2026-11-16 05:35 KST_
 | 4.3 지금까지 | `results/tables_e2.md` |
 | 4.6 thread 수 | `results/res_e0.jsonl` |
 | 한계 2의 r=5 진단 | `logs/diag/ind_by_r_e1_lr1e-3.txt` |
-| 4.5 속도와 메모리 | `results/cost_read.jsonl`, 측정 코드 `cost_read.py` |
 | 4.5 정밀도 | `results/precision_e1fix.json`, 코드 `precision_eval.py` |
 | 4.5 합친 커널 | `results/cost_kernel.jsonl`, 코드 `squared_read_triton.py` |
-| 4.5 상태까지 합친 커널 | `results/cost_fused.jsonl`, 코드 `fused_read.py` |
 | 4.5 layer 전체, 가장 빠른 비교군 | `results/cost_best.jsonl`, `results/cost_layer.jsonl`, 코드 `fused_layer.py`, `best_baselines.py` |
 | 모든 실행의 원자료 | `results/res_server.jsonl` |

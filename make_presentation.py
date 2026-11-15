@@ -197,13 +197,7 @@ out += ["", f"제안 layer는 모든 길이에서 DeltaNet보다 {min(slow):.1f}
 for k, nm in (("torch fp32", "PyTorch fp32"), ("torch bf16", "PyTorch bf16"), ("fused tf32", "합친 Triton 커널 TF32"), ("fused bf16", "**합친 Triton 커널 bf16**")):
     r = kern[k]
     out.append(f"| {nm} | {r['ms']:.2f} ms | {r['tflops']:.0f} TFLOP/s | {p(r['frac_cos_above_0_99'], 0)}% |")
-out += ["", "| 학습 한 step, 순전파와 역전파 | FlashAttention | DeltaNet | 제안 layer |", "|---|---|---|---|"]
-for T in sorted(layer):
-    r = layer[T]
-    if "ours_train_fwd_bwd" in r:
-        out.append(f"| 길이 {T:,} | {r['flash_attention_fwd_bwd']:.2f} ms | {r['deltanet_fla_fwd_bwd']:.2f} ms | {r['ours_train_fwd_bwd']:.0f} ms |")
-out += ["", "학습에서는 아직 크게 느리다. 순전파만 합친 커널이고, 역전파는 chunk마다 PyTorch로 다시 계산하는 메모리 절약형이기 때문이다. "
-        "합친 역전파 커널이 다음 과제이다.", ""]
+
 
 text = "\n".join(out) + "\n"
 open("PRESENTATION.md", "w").write(text)
