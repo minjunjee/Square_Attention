@@ -71,42 +71,42 @@
 .venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 1e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 2 --lr 1e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 4 --lr 1e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 8 --lr 1e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model lstm --L 2 --lr 1e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 3e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 2 --lr 3e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 4 --lr 3e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 8 --lr 3e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model lstm --L 2 --lr 3e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 3e-4 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 2 --lr 3e-4 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 4 --lr 3e-4 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 8 --lr 3e-4 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model lstm --L 2 --lr 3e-4 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 1e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 2 --lr 1e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 4 --lr 1e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 8 --lr 1e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model lstm --L 2 --lr 1e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 3e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 2 --lr 3e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 4 --lr 3e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 8 --lr 3e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model lstm --L 2 --lr 3e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 3e-4 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 2 --lr 3e-4 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 4 --lr 3e-4 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 8 --lr 3e-4 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model lstm --L 2 --lr 3e-4 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 1e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 2 --lr 1e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 4 --lr 1e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model delta --L 8 --lr 1e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model lstm --L 2 --lr 1e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
-.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 3e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 2 --lr 3e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 3e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 3e-4 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 1e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 3e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 3e-4 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 1e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model tf --L 4 --dm 64 --lr 3e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 4 --lr 3e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 4 --lr 3e-4 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 4 --lr 1e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 4 --lr 3e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 4 --lr 3e-4 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 4 --lr 1e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 4 --lr 3e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 8 --lr 1e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 8 --lr 3e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 8 --lr 3e-4 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 8 --lr 1e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 8 --lr 3e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 8 --lr 3e-4 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model delta --L 8 --lr 1e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --L 8 --lr 3e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model lstm --L 2 --lr 1e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model lstm --L 2 --lr 3e-3 --seed 2 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model lstm --L 2 --lr 3e-4 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model lstm --L 2 --lr 1e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model lstm --L 2 --lr 3e-3 --seed 3 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model lstm --L 2 --lr 3e-4 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
+.venv/bin/python poc_fair.py --model lstm --L 2 --lr 1e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model lstm --L 2 --lr 3e-3 --seed 4 --tag e2 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model delta --loops 4 --loops_eval 8 --lr 3e-4 --seed 0 --tag e3 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl
 .venv/bin/python poc_fair.py --model tf --dm 64 --loops 4 --loops_lo 2 --loops_hi 6 --loops_eval 16 --lr 3e-4 --seed 0 --tag e3 --steps 100000 --bs 64 --eval_every 2000 --out results/res_server.jsonl

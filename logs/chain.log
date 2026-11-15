@@ -10,3 +10,4 @@
 2026-11-15 23:56:32 KST started (b) follow-up: proposed layer after one Transformer layer (--pre 1), square and once, condition D, 3 seeds, 2 per GPU
 2026-11-16 00:19:18 KST started (b) follow-up 2: --pre 1 square on conditions B and C, 3 seeds, 2 per GPU
 2026-11-16 00:42:32 KST stopped vt_fix2 (TF pre-layer on B and C; would stay stuck like TF4 at 30k steps); started vt_fix3: DeltaNet or conv pre-layer, 15 jobs, 3 per GPU
+2026-11-16 01:42:05 KST reordered the not-yet-read part of jobs/poolB.txt: DeltaNet 2 layers, Transformer 4 layers, DeltaNet 4 and 8 layers, LSTM, then experiment 3 (same jobs, order only)
