@@ -1,6 +1,6 @@
 # PoC 발표용 숫자
 
-생성: 2026-11-16 05:16 KST. `make_presentation.py`가 `results/res_server.jsonl`에서 직접 계산한다. 정확도는 %이고, learning rate는 설정마다 3e-4, 1e-3, 3e-3을 돌려 학습 분포 평균이 가장 높은 것을 골랐다. "99% seed"는 학습 분포의 깊이 1에서 4를 모두 99% 이상 맞힌 seed이다. 두 체인 시험의 깊이 5에서 8은 학습에 나오지 않는다.
+생성: 2026-11-16 05:35 KST. `make_presentation.py`가 `results/res_server.jsonl`에서 직접 계산한다. 정확도는 %이고, learning rate는 설정마다 3e-4, 1e-3, 3e-3을 돌려 학습 분포 평균이 가장 높은 것을 골랐다. "99% seed"는 학습 분포의 깊이 1에서 4를 모두 99% 이상 맞힌 seed이다. 두 체인 시험의 깊이 5에서 8은 학습에 나오지 않는다.
 
 ## 표 1. 효과: 같은 layer에서 읽는 방법만 바꿨을 때
 
@@ -47,7 +47,7 @@
 | DeltaNet 8층 | 411,336 | 0.003 | 2/2 | 78.2 | 66.5 | 78.2 | 19,000 |
 | Transformer 12층, 논문 크기 | 37,909,544 | 0.0001 | 4/5 | 65.7 | 29.3 | 62.9 | 24,000 |
 | Transformer 4층 | 210,088 | 0.001 | 0/5 | 학습 부족 |  | 46.7 |  |
-| LSTM 2층 | 239,144 | 0.003 | 0/2 | 학습 부족 |  | 26.9 |  |
+| LSTM 2층 | 239,144 | 0.003 | 0/3 | 학습 부족 |  | 21.2 |  |
 
 깊이 8의 찍기 수준은 50%이다. 99% seed가 없는 모델은 계획서 5절의 규칙대로 학습 부족으로 보고 비교에 쓰지 않는다.
 
@@ -89,24 +89,32 @@
 
 깨끗한 형식에서는 완벽하다. 여러 token 이름에서 무너지는 원인은 이름을 key 하나로 만드는 부분이고, 앞 layer 하나로 해결된다(C). 방해 token까지 있으면 제곱해서 읽을 때만 일부 seed가 회복한다(D). 방해 token 문제는 아직 풀지 못했다(B).
 
-## 표 6. GPU 효율: 모든 위치에서 읽을 때
+## 표 6. GPU 가속: 모든 위치에서 읽는 layer 전체의 속도
 
-RTX PRO 6000 Blackwell 한 장을 다른 실행 없이 썼다. 위: 학습된 모델의 실제 상태 65,536개를 r=5로 읽는 순전파. 아래: 16,384 token, head 4개, d=64의 순전파, 길이 16,384.
+RTX PRO 6000 Blackwell 한 장을 다른 실행 없이 썼다. head 4개, d=64, r=5, bf16, 순전파. 길이 16,384까지는 한 번에 16,384 token, 그보다 길면 sequence 하나이다. 비교군은 각자 가장 빠른 구현을 썼다. softmax attention은 PyTorch SDPA의 FlashAttention, cuDNN, memory-efficient 백엔드 중 가장 빠른 것이고, DeltaNet은 flash-linear-attention의 chunk와 fused_recurrent 커널 중 가장 빠른 것이다. fla의 fused_chunk 커널은 이 버전에서 호출 형식이 맞지 않아 재지 못했다. 제안 layer는 쓰기(delta rule)를 DeltaNet과 같은 fla 커널로, 읽기를 상태를 on-chip에 둔 채 제곱하는 Triton 커널로 한다. 쓰기가 DeltaNet과 같으므로 제안 layer는 구조상 DeltaNet보다 빠를 수 없다.
 
-| 구현 | 시간 | 처리량, 추정 | 결과가 float64 기준과 cosine 0.99 이상 |
+| 길이 T | softmax attention, 가장 빠른 구현 | DeltaNet, 가장 빠른 구현 | **제안 layer** | 제안 대 DeltaNet | 제안 대 attention | 합치기 전 PyTorch | 커널로 빨라진 배수 |
+|---|---|---|---|---|---|---|---|
+| 1,024 | 0.06 ms, FlashAttention | 0.17 ms, chunk | **0.81 ms** | 4.7배 느림 | 13.0배 느림 | 12.8 ms | 16배 |
+| 4,096 | 0.17 ms, cuDNN | 0.19 ms, chunk | **0.88 ms** | 4.5배 느림 | 5.3배 느림 | 19.3 ms | 22배 |
+| 16,384 | 0.57 ms, cuDNN | 0.37 ms, chunk | **1.14 ms** | 3.0배 느림 | 2.0배 느림 | 75.7 ms | 66배 |
+| 65,536 | 6.61 ms, cuDNN | 1.54 ms, chunk | **4.17 ms** | 2.7배 느림 | **1.6배 빠름** |  |  |
+| 131,072 | 24.59 ms, FlashAttention | 3.22 ms, chunk | **8.32 ms** | 2.6배 느림 | **3.0배 빠름** |  |  |
+
+제안 layer는 모든 길이에서 DeltaNet보다 2.6배에서 4.7배 느리다. 시간이 token 수에 비례하는 반면 softmax attention은 길이의 제곱으로 늘어서, 약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르다. 13만 token에서 제안 layer의 메모리는 0.77 GB이다.
+
+| 읽기 커널만, 학습된 상태 65,536개 | 시간 | 처리량, 추정 | float64 기준과 cosine 0.99 이상 |
 |---|---|---|---|
 | PyTorch fp32 | 19.06 ms | 9 TFLOP/s | 100% |
-| PyTorch TF32 | 19.04 ms | 9 TFLOP/s | 100% |
 | PyTorch bf16 | 10.09 ms | 17 TFLOP/s | 100% |
-| **합친 Triton 커널 TF32** | 1.26 ms | 137 TFLOP/s | 100% |
+| 합친 Triton 커널 TF32 | 1.26 ms | 137 TFLOP/s | 100% |
 | **합친 Triton 커널 bf16** | 0.76 ms | 227 TFLOP/s | 100% |
 
-| 순전파, 길이 16,384 | 시간 |
-|---|---|
-| FlashAttention bf16 | 0.63 ms |
-| DeltaNet bf16, fla 커널 | 0.37 ms |
-| 제곱해서 읽기, 상태까지 합친 커널 bf16, 읽기만 | 0.66 ms |
-| 같은 커널 TF32, 읽기만 | 1.50 ms |
+| 학습 한 step, 순전파와 역전파 | FlashAttention | DeltaNet | 제안 layer |
+|---|---|---|---|
+| 길이 1,024 | 0.23 ms | 0.55 ms | 124 ms |
+| 길이 4,096 | 0.59 ms | 0.65 ms | 116 ms |
+| 길이 16,384 | 1.93 ms | 1.39 ms | 446 ms |
 
-제곱해서 읽기는 FlashAttention과 같은 수준의 처리량을 낸다. 읽기 비용은 길이와 상관없이 token 수에만 비례해서, 길이 16,384에서 FlashAttention의 순전파와 비슷하다. 쓰기, 즉 delta rule은 DeltaNet 커널을 쓸 수 있다. 역전파 커널은 아직 없다.
+학습에서는 아직 크게 느리다. 순전파만 합친 커널이고, 역전파는 chunk마다 PyTorch로 다시 계산하는 메모리 절약형이기 때문이다. 합친 역전파 커널이 다음 과제이다.
 

@@ -1,0 +1,5 @@
+{"T": 1024, "B": 16, "tokens": 16384, "sdpa_flash": 0.062, "sdpa_efficient": 0.119, "sdpa_cudnn": 0.078, "delta_chunk": 0.171, "delta_fused_chunk": "unavailable: TypeError", "delta_fused_recurrent": 0.7, "ours_layer_bf16": 0.809}
+{"T": 4096, "B": 4, "tokens": 16384, "sdpa_flash": 0.173, "sdpa_efficient": 0.376, "sdpa_cudnn": 0.167, "delta_chunk": 0.194, "delta_fused_chunk": "unavailable: TypeError", "delta_fused_recurrent": 2.692, "ours_layer_bf16": 0.877}
+{"T": 16384, "B": 1, "tokens": 16384, "sdpa_flash": 0.627, "sdpa_efficient": 1.292, "sdpa_cudnn": 0.573, "delta_chunk": 0.374, "delta_fused_chunk": "unavailable: TypeError", "delta_fused_recurrent": 10.489, "ours_layer_bf16": 1.139}
+{"T": 65536, "B": 1, "tokens": 65536, "sdpa_flash": 6.724, "sdpa_efficient": 14.469, "sdpa_cudnn": 6.61, "delta_chunk": 1.538, "delta_fused_chunk": "unavailable: TypeError", "ours_layer_bf16": 4.169}
+{"T": 131072, "B": 1, "tokens": 131072, "sdpa_flash": 24.588, "sdpa_efficient": 54.29, "sdpa_cudnn": 25.906, "delta_chunk": 3.222, "delta_fused_chunk": "unavailable: TypeError", "ours_layer_bf16": 8.322}

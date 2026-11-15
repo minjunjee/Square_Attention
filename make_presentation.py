@@ -151,23 +151,59 @@ out += ["", "깨끗한 형식에서는 완벽하다. 여러 token 이름에서 �
 
 # 6. GPU
 kern = {r["impl"]: r for r in map(json.loads, open("results/cost_kernel.jsonl"))}
-fused = [json.loads(l) for l in open("results/cost_fused.jsonl")]
-f16 = {r["op"]: r["ms"] for r in fused if r.get("T") == 16384 and "ms" in r}
-out += ["## 표 6. GPU 효율: 모든 위치에서 읽을 때", "",
-        "RTX PRO 6000 Blackwell 한 장을 다른 실행 없이 썼다. 위: 학습된 모델의 실제 상태 65,536개를 r=5로 읽는 순전파. "
-        "아래: 16,384 token, head 4개, d=64의 순전파, 길이 16,384.", "",
-        "| 구현 | 시간 | 처리량, 추정 | 결과가 float64 기준과 cosine 0.99 이상 |", "|---|---|---|---|"]
-for k, nm in (("torch fp32", "PyTorch fp32"), ("torch tf32", "PyTorch TF32"), ("torch bf16", "PyTorch bf16"),
-              ("fused tf32", "**합친 Triton 커널 TF32**"), ("fused bf16", "**합친 Triton 커널 bf16**")):
+layer = {}
+for line in open("results/cost_layer.jsonl"):
+    r = json.loads(line)
+    layer[r["T"]] = r                                                # the last measurement of each length
+unfused = {r["T"]: r["ms"] for r in map(json.loads, open("results/cost_fused.jsonl")) if r.get("op", "").startswith("unfused")}
+best = {}
+for line in open("results/cost_best.jsonl"):
+    r = json.loads(line)
+    best[r["T"]] = r                                                 # the last measurement of each length
+
+
+def fastest(r, keys):
+    vals = [(r[k], k) for k in keys if isinstance(r.get(k), (int, float))]
+    return min(vals) if vals else (None, None)
+
+
+def ratio(a, b):
+    return f"{a / b:.1f}배 느림" if a >= b else f"**{b / a:.1f}배 빠름**"
+
+
+names = {"sdpa_flash": "FlashAttention", "sdpa_cudnn": "cuDNN", "sdpa_efficient": "memory-efficient",
+         "delta_chunk": "chunk", "delta_fused_recurrent": "fused_recurrent", "delta_fused_chunk": "fused_chunk"}
+out += ["## 표 6. GPU 가속: 모든 위치에서 읽는 layer 전체의 속도", "",
+        "RTX PRO 6000 Blackwell 한 장을 다른 실행 없이 썼다. head 4개, d=64, r=5, bf16, 순전파. 길이 16,384까지는 한 번에 16,384 token, 그보다 길면 sequence 하나이다. "
+        "비교군은 각자 가장 빠른 구현을 썼다. softmax attention은 PyTorch SDPA의 FlashAttention, cuDNN, memory-efficient 백엔드 중 가장 빠른 것이고, "
+        "DeltaNet은 flash-linear-attention의 chunk와 fused_recurrent 커널 중 가장 빠른 것이다. fla의 fused_chunk 커널은 이 버전에서 호출 형식이 맞지 않아 재지 못했다. "
+        "제안 layer는 쓰기(delta rule)를 DeltaNet과 같은 fla 커널로, 읽기를 상태를 on-chip에 둔 채 제곱하는 Triton 커널로 한다. "
+        "쓰기가 DeltaNet과 같으므로 제안 layer는 구조상 DeltaNet보다 빠를 수 없다.", "",
+        "| 길이 T | softmax attention, 가장 빠른 구현 | DeltaNet, 가장 빠른 구현 | **제안 layer** | 제안 대 DeltaNet | 제안 대 attention | 합치기 전 PyTorch | 커널로 빨라진 배수 |",
+        "|---|---|---|---|---|---|---|---|"]
+for T in sorted(best):
+    r = best[T]
+    att, att_k = fastest(r, ("sdpa_flash", "sdpa_cudnn", "sdpa_efficient"))
+    dn, dn_k = fastest(r, ("delta_chunk", "delta_fused_chunk", "delta_fused_recurrent"))
+    ours = r["ours_layer_bf16"]
+    un = unfused.get(T)
+    out.append(f"| {T:,} | {att:.2f} ms, {names[att_k]} | {dn:.2f} ms, {names[dn_k]} | **{ours:.2f} ms** | {ratio(ours, dn)} | {ratio(ours, att)} | "
+               f"{f'{un:.1f} ms' if un else ''} | {f'{un / ours:.0f}배' if un else ''} |")
+slow = [best[T]["ours_layer_bf16"] / fastest(best[T], ("delta_chunk", "delta_fused_chunk", "delta_fused_recurrent"))[0] for T in best]
+out += ["", f"제안 layer는 모든 길이에서 DeltaNet보다 {min(slow):.1f}배에서 {max(slow):.1f}배 느리다. 시간이 token 수에 비례하는 반면 softmax attention은 길이의 제곱으로 늘어서, "
+        "약 3만 token부터 제안 layer가 가장 빠른 attention 구현보다 빠르다. 13만 token에서 제안 layer의 메모리는 "
+        + f"{layer[max(layer)]['ours_layer_peak_gb']:.2f} GB이다.", "",
+        "| 읽기 커널만, 학습된 상태 65,536개 | 시간 | 처리량, 추정 | float64 기준과 cosine 0.99 이상 |", "|---|---|---|---|"]
+for k, nm in (("torch fp32", "PyTorch fp32"), ("torch bf16", "PyTorch bf16"), ("fused tf32", "합친 Triton 커널 TF32"), ("fused bf16", "**합친 Triton 커널 bf16**")):
     r = kern[k]
     out.append(f"| {nm} | {r['ms']:.2f} ms | {r['tflops']:.0f} TFLOP/s | {p(r['frac_cos_above_0_99'], 0)}% |")
-out += ["", "| 순전파, 길이 16,384 | 시간 |", "|---|---|"]
-for k, nm in (("sdpa bf16, forward", "FlashAttention bf16"), ("delta_fla bf16, forward", "DeltaNet bf16, fla 커널"),
-              ("read: fused squared read bf16", "제곱해서 읽기, 상태까지 합친 커널 bf16, 읽기만"),
-              ("read: fused squared read tf32", "같은 커널 TF32, 읽기만")):
-    out.append(f"| {nm} | {f16[k]:.2f} ms |")
-out += ["", "제곱해서 읽기는 FlashAttention과 같은 수준의 처리량을 낸다. 읽기 비용은 길이와 상관없이 token 수에만 비례해서, 길이 16,384에서 FlashAttention의 "
-        "순전파와 비슷하다. 쓰기, 즉 delta rule은 DeltaNet 커널을 쓸 수 있다. 역전파 커널은 아직 없다.", ""]
+out += ["", "| 학습 한 step, 순전파와 역전파 | FlashAttention | DeltaNet | 제안 layer |", "|---|---|---|---|"]
+for T in sorted(layer):
+    r = layer[T]
+    if "ours_train_fwd_bwd" in r:
+        out.append(f"| 길이 {T:,} | {r['flash_attention_fwd_bwd']:.2f} ms | {r['deltanet_fla_fwd_bwd']:.2f} ms | {r['ours_train_fwd_bwd']:.0f} ms |")
+out += ["", "학습에서는 아직 크게 느리다. 순전파만 합친 커널이고, 역전파는 chunk마다 PyTorch로 다시 계산하는 메모리 절약형이기 때문이다. "
+        "합친 역전파 커널이 다음 과제이다.", ""]
 
 text = "\n".join(out) + "\n"
 open("PRESENTATION.md", "w").write(text)
