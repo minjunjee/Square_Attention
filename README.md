@@ -29,6 +29,7 @@
 | `run_gpu_pool.sh`, `run_gpu_pool_claim.sh`, `run_after_*.sh` | 작업 목록 `jobs/*.txt`를 GPU에 나눠 돌리고 실험을 이어 붙인다 |
 | `interference_oracle.py`, `tools/oracle_code_init.py` | 의도한 풀이를 학습 없이 계산한다. 뒤의 것은 code를 놓는 방법에 따른 차이 |
 | `tools/code_geometry.py`, `tools/e9_curves.py` | 저장된 모델과 실험 9 실행이 code를 어떻게 놓는지 잰다 |
+| `tools/eval_by_r.py`, `tools/e10_solutions.py`, `tools/err_by_rank.py` | 저장된 모델을 시험 제곱 횟수를 바꿔 다시 시험하고, 실행마다 배운 풀이의 종류와 틀리는 질문을 나눠 본다 |
 | `tools/` | 상태 확인, 대기, 진단 스크립트 |
 
 ## 돌리는 법
@@ -45,4 +46,4 @@ CUDA_VISIBLE_DEVICES=<GPU UUID> .venv/bin/python poc_fair.py --model tied --read
 
 ## 상태
 
-실험 1에서 8은 2026년 11월 16일 08:51 KST에 끝났다. 결론과 숫자는 `PRESENTATION.md`, `draft/DRAFT.md`, `SERVER_RESULTS.md`에 있다. 11월 20일 00:06 KST에 실험 9를 시작했다. 이름이 512개일 때 학습이 요령에 갇히는 문제에 처방 8개를 비교하는 실험이고, 설계와 판정 기준, 결과는 `SERVER_RESULTS.md` 4.9절에 있다. 체크포인트(`ckpt/`)와 실행별 로그는 용량 때문에 올리지 않았고, 모든 실행의 숫자는 `results/res_server.jsonl`에 있다. 보류한 실험의 작업 목록은 `jobs/tf12_deferred.txt`, `jobs/e5_draft.txt`, `jobs/e6_draft.txt`이다.
+실험 1에서 8은 2026년 11월 16일 08:51 KST에 끝났다. 결론과 숫자는 `PRESENTATION.md`, `draft/DRAFT.md`, `SERVER_RESULTS.md`에 있다. 11월 20일 00:06에서 03:48 KST 사이에 실험 9, 그 보완, 실험 10을 돌렸다. 이름이 512개일 때 학습이 요령에 갇히는 문제의 처방을 비교하고, 고친 설정으로 프로그램 길이와 state 크기를 늘려 본 실험이다. 설계와 판정 기준, 결과는 `SERVER_RESULTS.md` 4.9절과 4.10절에 있다. 지금 돌고 있는 실험은 없다. 체크포인트(`ckpt/`)와 실행별 로그는 용량 때문에 올리지 않았고, 모든 실행의 숫자는 `results/res_server.jsonl`에 있다. 보류한 실험의 작업 목록은 `jobs/tf12_deferred.txt`, `jobs/e5_draft.txt`, `jobs/e6_draft.txt`이다.
