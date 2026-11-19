@@ -268,6 +268,30 @@ def e9_tables(rs):
     return "\n".join(out), "\n".join(geo)
 
 
+def e9b_table(rs):
+    """Follow-up of experiment 9: combinations of the remedies, same verdict rule (test at r = 6)."""
+    def arm(r):
+        a = "직교 초기화와 " + ("자주 나오는 이름" if r["name_zipf"] else "이름을 차례로 늘림")
+        return a + (", 학습 때 r을 6까지" if r["r_train"][1] == 6 else "")
+    g = defaultdict(list)
+    for r in rs:
+        if r["tag"] == "e9b":
+            g[arm(r)].append(r)
+    base_ok = sum(ok(r) for r in rs if r["tag"] == "e9" and e9_arm(r) == "기준")
+    out = ["| 조건 | 끝난 seed | 학습에 성공한 seed | 학습 분포 깊이 1이 90% 이상인 seed | 두 체인 5에서 8이 90% 이상인 seed | "
+           "두 체인 5에서 8, seed 순서 | 성공한 seed의 두 체인 5에서 8 평균 | 실험 9의 기준 조건과의 차이, p | 판정 |", "|---|---|---|---|---|---|---|---|---|"]
+    for a in sorted(g, key=lambda x: ("6까지" in x, "차례로" in x)):
+        rs_ = sorted(g[a], key=lambda r: r["seed"])
+        good = [r for r in rs_ if ok(r)]
+        d58 = float(np.mean([deep(r, 5, 8) for r in good])) if good else None
+        done = len(rs_) == 10
+        pv = f"{fisher_greater(len(good), 10, base_ok, 10):.3f}" if done else ""
+        v = ("고침" if len(good) >= 7 and d58 is not None and d58 >= 0.90 else "못 고침") if done else ""
+        out.append(f"| {a} | {len(rs_)} | {len(good)} | {sum(r['acc_in_dist']['1'] >= 0.90 for r in rs_)} | {sum(deep(r, 5, 8) >= 0.90 for r in rs_)} | "
+                   f"{', '.join(f'{100 * deep(r, 5, 8):.0f}' for r in rs_)} | {pct(d58)} | {pv} | {v} |")
+    return "\n".join(out)
+
+
 def oracle_tables():
     """The intended solution computed without training (interference_oracle.py)."""
     path = os.path.join(ROOT, "results/oracle_interference.jsonl")
@@ -293,7 +317,7 @@ def oracle_tables():
 def running_table():
     out = ["| 풀 | 작업 | 모델 | 진행 | step당 | 남은 시간, 추정 |", "|---|---|---|---|---|---|"]
     queued = []
-    for d in ("e2_tf12", "poolB", "e2fix", "vt", "vt_fix3", "vt_fix4", "e3_now", "e8", "e8b", "e9"):
+    for d in ("e2_tf12", "poolB", "e2fix", "vt", "vt_fix3", "vt_fix4", "e3_now", "e8", "e8b", "e9", "e9b"):
         plog = os.path.join(ROOT, f"logs/{d}/pool.log")
         if not os.path.exists(plog):
             continue
@@ -352,11 +376,11 @@ def main():
     counts = Counter(r["tag"] for r in rs)
     vt_base, vt_fix = vt_tables(rs)
     e9, e9_geom = e9_tables(rs)
-    parts = dict(e2=e2_table(rs), vt_base=vt_base, vt_fix=vt_fix, e3=e3_table(rs), e8=e8_table(rs), e8b=e8b_table(rs), oracle=oracle_tables(), e9=e9, e9_geom=e9_geom, running=running_table())
+    parts = dict(e2=e2_table(rs), vt_base=vt_base, vt_fix=vt_fix, e3=e3_table(rs), e8=e8_table(rs), e8b=e8b_table(rs), oracle=oracle_tables(), e9=e9, e9_geom=e9_geom, e9b=e9b_table(rs), running=running_table())
     text = (f"# 자동 상태 보고\n\n생성: {now()}. `tools/make_status.py`가 결과 파일과 풀 로그에서 만든다.\n\n"
             f"끝난 실행 수: {dict(sorted(counts.items()))}\n\n{gpu_check()}\n\n"
             f"## 실험 2\n\n{parts['e2']}\n\n## (b) 기본 실행\n\n{parts['vt_base']}\n\n## (b) 보완\n\n{parts['vt_fix']}\n\n"
-            f"## 실험 3\n\n{parts['e3']}\n\n## 실험 8, 간섭 시험\n\n{parts['e8']}\n\n## 실험 8 보완, n=16\n\n{parts['e8b']}\n\n## 의도한 풀이, 학습 없음\n\n{parts['oracle']}\n\n## 실험 9, 이름이 많을 때의 학습\n\n{parts['e9']}\n\n{parts['e9_geom']}\n\n## 돌고 있는 작업\n\n{parts['running']}\n")
+            f"## 실험 3\n\n{parts['e3']}\n\n## 실험 8, 간섭 시험\n\n{parts['e8']}\n\n## 실험 8 보완, n=16\n\n{parts['e8b']}\n\n## 의도한 풀이, 학습 없음\n\n{parts['oracle']}\n\n## 실험 9, 이름이 많을 때의 학습\n\n{parts['e9']}\n\n{parts['e9_geom']}\n\n## 실험 9 보완\n\n{parts['e9b']}\n\n## 돌고 있는 작업\n\n{parts['running']}\n")
     open("results/STATUS.md", "w").write(text)
     if args.splice:
         for p in ("SERVER_RESULTS.md", "draft/DRAFT.md"):
