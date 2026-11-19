@@ -1,0 +1,90 @@
+=== ckpt/e1_square_lr1e-3_s0.pt
+mixing weights over [current token, 1 back, 2 back, 3 back]
+   key   [0.6  0.   0.24 0.16]
+   value [0.   0.78 0.   0.21]
+   read  [0. 0. 1. 0.]
+mean write gate: left variable 0.392 | '=' 0.004 | right side 0.997 | newline 0.790 | '#' 0.524 | query variable 0.996 | ':' 0.070
+program: v=4 | n=v | o=n | a=3 | m=n | g=a | b=g | w=m | p=m | u=w | h=u | z=b | e=z | r=e | k=0 | l=4 | #h:#m:#r:#h:
+state sends: a->#(0.65), b->#(0.96), e->#(0.95), g->#(0.94), h->#(1.00), k->#(0.85), l->#(0.87), m->#(0.95), n->#(0.93), o->#(0.96), p->#(0.96), r->#(0.96), u->#(0.98), v->\n(0.62), w->#(0.96), z->#(0.96), 0->=(0.93), 3->=(0.93), 4->=(0.94), =->#(0.97), \n->4(0.98), #->4(0.71), :->:(0.87)
+query h answer 4 | nearest token after n multiplications: 1:4(0.71) 2:=(0.96) 3:=(0.30) 4:#(0.96) 6:=(0.90) 8:#(0.58) 12:s(0.25) 16:s(0.16) 24:s(0.09) 32:s(0.09) 48:s(0.09) 64:s(0.10)
+=== ckpt/e1_square_lr1e-3_s1.pt
+mixing weights over [current token, 1 back, 2 back, 3 back]
+   key   [0.   0.37 0.31 0.32]
+   value [0.11 0.   0.89 0.  ]
+   read  [1. 0. 0. 0.]
+mean write gate: left variable 0.128 | '=' 0.004 | right side 0.466 | newline 0.999 | '#' 0.723 | query variable 0.153 | ':' 0.996
+program: v=4 | n=v | o=n | a=3 | m=n | g=a | b=g | w=m | p=m | u=w | h=u | z=b | e=z | r=e | k=0 | l=4 | #h:#m:#r:#h:
+state sends: a->=(0.91), b->=(0.87), e->=(0.86), g->=(0.85), h->#(0.83), k->=(0.96), l->=(0.96), m->=(0.90), n->=(0.90), o->=(0.73), p->=(0.57), r->=(0.68), u->=(0.84), v->=(0.93), w->=(0.88), z->=(0.86), 0->:(0.71), 3->=(0.74), 4->:(0.73), =->h(0.76), \n->\n(0.50), #->#(0.95), :->7(0.70)
+query h answer 4 | nearest token after n multiplications: 1:7(0.70) 2::(0.75) 3:7(0.79) 4::(0.61) 6::(0.59) 8::(0.58) 12::(0.49) 16::(0.39) 24:e(0.43) 32:e(0.46) 48:e(0.45) 64:e(0.45)
+=== ckpt/e1_square_lr1e-3_s2.pt
+mixing weights over [current token, 1 back, 2 back, 3 back]
+   key   [0.   0.   0.86 0.13]
+   value [0.83 0.   0.   0.17]
+   read  [0. 1. 0. 0.]
+mean write gate: left variable 0.034 | '=' 0.759 | right side 0.888 | newline 0.021 | '#' 0.061 | query variable 0.012 | ':' 0.196
+program: v=4 | n=v | o=n | a=3 | m=n | g=a | b=g | w=m | p=m | u=w | h=u | z=b | e=z | r=e | k=0 | l=4 | #h:#m:#r:#h:
+state sends: a->3(0.94), b->g(0.96), e->z(0.97), g->a(0.89), h->u(0.98), k->0(0.98), l->4(0.98), m->n(0.96), n->v(0.95), o->n(0.93), p->m(0.96), r->e(0.97), u->w(0.94), v->4(0.97), w->m(0.92), z->b(0.94), 0->0(0.77), 3->3(0.87), 4->4(0.88), =->=(0.79), \n->=(0.91), #->=(0.75), :->:(0.72)
+query h answer 4 | nearest token after n multiplications: 1:u(0.98) 2:w(0.93) 3:m(0.86) 4:n(0.81) 6:4(0.76) 8:4(0.88) 12:4(0.89) 16:4(0.85) 24:4(0.83) 32:4(0.83) 48:4(0.82) 64:4(0.81)
+=== ckpt/e1_square_lr1e-3_s3.pt
+mixing weights over [current token, 1 back, 2 back, 3 back]
+   key   [0. 0. 0. 1.]
+   value [0. 1. 0. 0.]
+   read  [0.01 0.77 0.22 0.01]
+mean write gate: left variable 0.918 | '=' 0.024 | right side 0.024 | newline 0.844 | '#' 0.226 | query variable 0.026 | ':' 0.046
+program: v=4 | n=v | o=n | a=3 | m=n | g=a | b=g | w=m | p=m | u=w | h=u | z=b | e=z | r=e | k=0 | l=4 | #h:#m:#r:#h:
+state sends: a->3(0.93), b->g(0.96), e->z(0.96), g->a(0.87), h->u(0.97), k->0(1.00), l->4(1.00), m->n(0.94), n->v(0.94), o->n(0.93), p->m(0.97), r->e(0.95), u->w(0.97), v->4(0.95), w->m(0.96), z->b(0.96), 0->0(0.95), 3->3(0.87), 4->4(0.78), =->\n(1.00), \n->\n(0.88), #->#(0.86), :->:(0.80)
+query h answer 4 | nearest token after n multiplications: 1:u(0.94) 2:w(0.87) 3:m(0.77) 4:n(0.61) 6:4(0.58) 8:4(0.81) 12:4(0.83) 16:4(0.83) 24:4(0.83) 32:4(0.84) 48:4(0.84) 64:4(0.83)
+=== ckpt/e1_square_lr1e-3_s4.pt
+mixing weights over [current token, 1 back, 2 back, 3 back]
+   key   [0.02 0.21 0.7  0.07]
+   value [0.87 0.   0.   0.13]
+   read  [0.31 0.54 0.12 0.03]
+mean write gate: left variable 0.041 | '=' 0.155 | right side 0.790 | newline 0.017 | '#' 0.008 | query variable 0.018 | ':' 0.009
+program: v=4 | n=v | o=n | a=3 | m=n | g=a | b=g | w=m | p=m | u=w | h=u | z=b | e=z | r=e | k=0 | l=4 | #h:#m:#r:#h:
+state sends: a->a(1.00), b->g(0.88), e->z(0.83), g->a(0.84), h->u(0.87), k->0(0.95), l->4(0.95), m->n(0.85), n->v(0.86), o->n(0.88), p->m(0.87), r->e(0.86), u->w(0.85), v->4(0.97), w->m(0.86), z->b(0.82), 0->0(0.93), 3->3(0.99), 4->4(0.89), =->\n(0.85), \n->=(0.95), #->#(0.86), :->:(0.90)
+query h answer 4 | nearest token after n multiplications: 1::(0.91) 2::(0.95) 3::(0.95) 4::(0.95) 6::(0.97) 8::(0.96) 12::(0.96) 16::(0.96) 24::(0.95) 32::(0.95) 48::(0.94) 64::(0.93)
+=== ckpt/e1_square_lr1e-3_s5.pt
+mixing weights over [current token, 1 back, 2 back, 3 back]
+   key   [0.53 0.07 0.39 0.  ]
+   value [0.12 0.61 0.   0.27]
+   read  [0. 0. 1. 0.]
+mean write gate: left variable 0.031 | '=' 0.006 | right side 1.000 | newline 0.006 | '#' 0.000 | query variable 0.857 | ':' 0.998
+program: v=4 | n=v | o=n | a=3 | m=n | g=a | b=g | w=m | p=m | u=w | h=u | z=b | e=z | r=e | k=0 | l=4 | #h:#m:#r:#h:
+state sends: a->=(0.86), b->=(0.76), e->=(0.71), g->=(0.76), h->h(0.36), k->:(0.83), l->:(0.81), m->=(0.81), n->=(0.86), o->=(0.58), p->p(0.48), r->r(0.41), u->=(0.64), v->=(0.88), w->=(0.76), z->=(0.69), 0->0(0.69), 3->3(0.65), 4->4(0.58), =->h(0.51), \n->h(0.56), #->#(0.66), :->h(0.53)
+query h answer 4 | nearest token after n multiplications: 1:#(0.66) 2:#(0.86) 3:#(0.77) 4:#(0.78) 6:#(0.75) 8:#(0.76) 12:#(0.81) 16:#(0.77) 24:#(0.72) 32:#(0.70) 48:#(0.67) 64:#(0.65)
+=== ckpt/e1_square_lr1e-3_s6.pt
+mixing weights over [current token, 1 back, 2 back, 3 back]
+   key   [0.   0.   0.92 0.08]
+   value [1. 0. 0. 0.]
+   read  [0.22 0.76 0.   0.02]
+mean write gate: left variable 0.037 | '=' 0.347 | right side 0.849 | newline 0.858 | '#' 0.057 | query variable 0.026 | ':' 0.359
+program: v=4 | n=v | o=n | a=3 | m=n | g=a | b=g | w=m | p=m | u=w | h=u | z=b | e=z | r=e | k=0 | l=4 | #h:#m:#r:#h:
+state sends: a->3(0.92), b->g(0.93), e->z(0.98), g->a(0.91), h->u(0.94), k->0(0.97), l->4(0.99), m->n(0.96), n->v(0.91), o->n(0.95), p->m(0.95), r->e(0.98), u->w(0.96), v->4(0.94), w->m(0.90), z->b(0.98), 0->0(0.92), 3->3(0.91), 4->4(0.92), =->:(0.75), \n->=(0.99), #->:(0.78), :->:(0.58)
+query h answer 4 | nearest token after n multiplications: 1:u(0.94) 2:w(0.87) 3:m(0.66) 4:m(0.59) 6:4(0.53) 8:4(0.91) 12:4(0.91) 16:4(0.92) 24:4(0.92) 32:4(0.92) 48:4(0.92) 64:4(0.92)
+=== ckpt/e1_square_lr1e-3_s7.pt
+mixing weights over [current token, 1 back, 2 back, 3 back]
+   key   [0.   0.   0.01 0.99]
+   value [0. 1. 0. 0.]
+   read  [0.24 0.75 0.   0.  ]
+mean write gate: left variable 0.902 | '=' 0.014 | right side 0.003 | newline 0.840 | '#' 0.288 | query variable 0.055 | ':' 0.017
+program: v=4 | n=v | o=n | a=3 | m=n | g=a | b=g | w=m | p=m | u=w | h=u | z=b | e=z | r=e | k=0 | l=4 | #h:#m:#r:#h:
+state sends: a->3(0.93), b->g(0.97), e->z(0.97), g->a(0.93), h->u(0.96), k->0(0.99), l->4(1.00), m->n(0.97), n->v(0.96), o->n(0.91), p->m(0.95), r->e(0.98), u->w(0.94), v->4(0.93), w->m(0.97), z->b(0.96), 0->0(0.86), 3->3(0.86), 4->4(0.85), =->\n(1.00), \n->\n(0.60), #->3(0.27), :->:(0.83)
+query h answer 4 | nearest token after n multiplications: 1:u(0.92) 2:w(0.83) 3:m(0.81) 4:n(0.71) 6:4(0.55) 8:4(0.83) 12:4(0.81) 16:4(0.80) 24:4(0.81) 32:4(0.81) 48:4(0.81) 64:4(0.80)
+=== ckpt/e1_square_lr1e-3_s8.pt
+mixing weights over [current token, 1 back, 2 back, 3 back]
+   key   [0.36 0.34 0.3  0.  ]
+   value [0. 1. 0. 0.]
+   read  [0.82 0.   0.18 0.  ]
+mean write gate: left variable 0.043 | '=' 0.273 | right side 0.999 | newline 0.133 | '#' 0.780 | query variable 0.999 | ':' 0.001
+program: v=4 | n=v | o=n | a=3 | m=n | g=a | b=g | w=m | p=m | u=w | h=u | z=b | e=z | r=e | k=0 | l=4 | #h:#m:#r:#h:
+state sends: a->=(0.89), b->=(0.86), e->=(0.85), g->=(0.84), h->#(0.70), k->=(0.92), l->=(0.87), m->=(0.88), n->=(0.89), o->=(0.66), p->p(0.45), r->=(0.59), u->=(0.81), v->=(0.89), w->=(0.88), z->=(0.84), 0->=(0.21), 3->=(0.72), 4->=(0.76), =->h(0.74), \n->\n(0.94), #->#(0.95), :->\n(0.94)
+query h answer 4 | nearest token after n multiplications: 1:=(0.52) 2:1(0.60) 3:=(0.38) 4:1(0.65) 6:1(0.64) 8:1(0.57) 12:1(0.43) 16:1(0.39) 24:r(0.40) 32:r(0.46) 48:r(0.51) 64:r(0.53)
+=== ckpt/e1_square_lr1e-3_s9.pt
+mixing weights over [current token, 1 back, 2 back, 3 back]
+   key   [0.   0.78 0.22 0.  ]
+   value [0.94 0.   0.01 0.05]
+   read  [0.02 0.97 0.   0.02]
+mean write gate: left variable 0.957 | '=' 0.124 | right side 0.860 | newline 0.072 | '#' 1.000 | query variable 0.981 | ':' 0.000
+program: v=4 | n=v | o=n | a=3 | m=n | g=a | b=g | w=m | p=m | u=w | h=u | z=b | e=z | r=e | k=0 | l=4 | #h:#m:#r:#h:
+state sends: a->3(0.83), b->g(0.93), e->z(0.94), g->a(0.92), h->u(0.94), k->0(0.90), l->4(0.92), m->n(0.92), n->v(0.89), o->n(0.90), p->m(0.92), r->e(0.95), u->w(0.93), v->4(0.93), w->m(0.93), z->b(0.94), 0->0(0.82), 3->3(0.83), 4->4(0.80), =->h(0.80), \n->h(0.98), #->h(0.98), :->:(0.48)
+query h answer 4 | nearest token after n multiplications: 1:u(0.94) 2:w(0.90) 3:m(0.84) 4:n(0.74) 6:h(0.43) 8:h(0.52) 12:h(0.38) 16:h(0.39) 24:h(0.36) 32:\n(0.36) 48:\n(0.35) 64:\n(0.35)

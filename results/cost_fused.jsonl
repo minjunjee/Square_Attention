@@ -1,0 +1,21 @@
+{"T": 1024, "B": 16, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "sdpa bf16, forward", "ms": 0.061}
+{"T": 1024, "B": 16, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "delta_fla bf16, forward", "ms": 0.169}
+{"T": 1024, "B": 16, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "write: delta rule chunks in PyTorch", "ms": 1.439}
+{"T": 1024, "B": 16, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "read: fused squared read tf32", "ms": 1.496}
+{"T": 1024, "B": 16, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "read: fused squared read bf16", "ms": 0.659}
+{"T": 1024, "B": 16, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "unfused squared read tf32 (write + states in memory + read)", "ms": 12.786}
+{"T": 1024, "B": 16, "op": "peak memory, GB", "unfused": 0.46, "fused_read_with_inputs": 0.14}
+{"T": 4096, "B": 4, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "sdpa bf16, forward", "ms": 0.178}
+{"T": 4096, "B": 4, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "delta_fla bf16, forward", "ms": 0.191}
+{"T": 4096, "B": 4, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "write: delta rule chunks in PyTorch", "ms": 5.571}
+{"T": 4096, "B": 4, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "read: fused squared read tf32", "ms": 1.496}
+{"T": 4096, "B": 4, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "read: fused squared read bf16", "ms": 0.66}
+{"T": 4096, "B": 4, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "unfused squared read tf32 (write + states in memory + read)", "ms": 19.259}
+{"T": 4096, "B": 4, "op": "peak memory, GB", "unfused": 0.24, "fused_read_with_inputs": 0.14}
+{"T": 16384, "B": 1, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "sdpa bf16, forward", "ms": 0.627}
+{"T": 16384, "B": 1, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "delta_fla bf16, forward", "ms": 0.372}
+{"T": 16384, "B": 1, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "write: delta rule chunks in PyTorch", "ms": 21.267}
+{"T": 16384, "B": 1, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "read: fused squared read tf32", "ms": 1.495}
+{"T": 16384, "B": 1, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "read: fused squared read bf16", "ms": 0.658}
+{"T": 16384, "B": 1, "H": 4, "d": 64, "r": 5, "tokens": 16384, "op": "unfused squared read tf32 (write + states in memory + read)", "ms": 75.65}
+{"T": 16384, "B": 1, "op": "peak memory, GB", "unfused": 0.19, "fused_read_with_inputs": 0.14}

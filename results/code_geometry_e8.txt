@@ -1,0 +1,23 @@
+names48 s0 (success): depth-1 acc 1.00 | name-name |cos| mean 0.119 rms 0.133 | digit-digit |cos| 0.054 | name-digit rms 0.077 | name energy in digit span 0.055 | name participation ratio 26.2
+    gate at lhs,=,rhs,NL: [0.39, 0.95, 0.03, 0.98]  at #,name,':' : [0.29, 0.01, 0.19]
+names64 s0 (success): depth-1 acc 1.00 | name-name |cos| mean 0.292 rms 0.299 | digit-digit |cos| 0.152 | name-digit rms 0.223 | name energy in digit span 0.220 | name participation ratio 9.6
+    gate at lhs,=,rhs,NL: [0.03, 1.0, 0.98, 0.73]  at #,name,':' : [0.95, 0.0, 0.5]
+names256 s2 (success): depth-1 acc 1.00 | name-name |cos| mean 0.117 rms 0.145 | digit-digit |cos| 0.181 | name-digit rms 0.102 | name energy in digit span 0.063 | name participation ratio 40.5
+    gate at lhs,=,rhs,NL: [0.06, 0.8, 0.57, 0.95]  at #,name,':' : [0.85, 0.02, 0.87]
+names256 s0 (trick): depth-1 acc 0.28 | name-name |cos| mean 0.202 rms 0.248 | digit-digit |cos| 0.454 | name-digit rms 0.301 | name energy in digit span 0.494 | name participation ratio 15.3
+    gate at lhs,=,rhs,NL: [0.18, 0.86, 0.54, 0.58]  at #,name,':' : [0.4, 0.01, 0.97]
+names512 s0 (trick): depth-1 acc 0.29 | name-name |cos| mean 0.220 rms 0.271 | digit-digit |cos| 0.511 | name-digit rms 0.303 | name energy in digit span 0.560 | name participation ratio 13.2
+    gate at lhs,=,rhs,NL: [0.1, 0.97, 0.42, 0.87]  at #,name,':' : [0.46, 0.0, 0.93]
+names512 s1 (trick): depth-1 acc 0.30 | name-name |cos| mean 0.190 rms 0.235 | digit-digit |cos| 0.243 | name-digit rms 0.250 | name energy in digit span 0.557 | name participation ratio 17.5
+    gate at lhs,=,rhs,NL: [0.18, 0.98, 0.8, 0.92]  at #,name,':' : [0.62, 0.01, 0.98]
+names512 s2 (1 hop only): depth-1 acc 0.98 | name-name |cos| mean 0.107 rms 0.134 | digit-digit |cos| 0.192 | name-digit rms 0.047 | name energy in digit span 0.022 | name participation ratio 50.6
+    gate at lhs,=,rhs,NL: [0.03, 0.74, 0.07, 0.93]  at #,name,':' : [0.01, 0.0, 0.97]
+names512 d128 s0 (success): depth-1 acc 1.00 | name-name |cos| mean 0.105 rms 0.131 | digit-digit |cos| 0.094 | name-digit rms 0.067 | name energy in digit span 0.041 | name participation ratio 52.6
+    gate at lhs,=,rhs,NL: [0.03, 0.11, 0.9, 0.95]  at #,name,':' : [0.04, 0.02, 0.19]
+names512 d128 s1 (trick): depth-1 acc 0.29 | name-name |cos| mean 0.170 rms 0.212 | digit-digit |cos| 0.511 | name-digit rms 0.256 | name energy in digit span 0.381 | name participation ratio 21.4
+    gate at lhs,=,rhs,NL: [0.13, 0.92, 0.22, 0.96]  at #,name,':' : [0.37, 0.01, 0.38]
+untrained, 512 names, d=64, seed 0: {'name_dims': 31.4, 'name_name_rms': 0.173, 'digit_digit_abs': 0.138, 'name_in_digit_span': 0.301}
+untrained, 512 names, d=64, seed 1: {'name_dims': 30.7, 'name_name_rms': 0.175, 'digit_digit_abs': 0.129, 'name_in_digit_span': 0.303}
+untrained, 512 names, d=64, seed 2: {'name_dims': 30.6, 'name_name_rms': 0.175, 'digit_digit_abs': 0.153, 'name_in_digit_span': 0.292}
+untrained, 512 names, d=64, seed 3: {'name_dims': 30.8, 'name_name_rms': 0.175, 'digit_digit_abs': 0.16, 'name_in_digit_span': 0.279}
+untrained, 512 names, d=64, seed 4: {'name_dims': 31.4, 'name_name_rms': 0.173, 'digit_digit_abs': 0.154, 'name_in_digit_span': 0.26}

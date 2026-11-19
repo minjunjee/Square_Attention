@@ -1,0 +1,6 @@
+{"impl": "torch fp32", "states": "trained", "N": 65536, "d": 64, "r": 5, "frac_cos_above_0_99": 1.0, "ms": 19.058, "tflops": 9.0, "max_abs_err": 6.854534149169922e-07, "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition"}
+{"impl": "torch tf32", "states": "trained", "N": 65536, "d": 64, "r": 5, "frac_cos_above_0_99": 1.0, "ms": 19.038, "tflops": 9.0, "max_abs_err": 0.001760333776473999, "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition"}
+{"impl": "torch bf16", "states": "trained", "N": 65536, "d": 64, "r": 5, "frac_cos_above_0_99": 1.0, "ms": 10.091, "tflops": 17.0, "max_abs_err": 0.01890978217124939, "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition"}
+{"impl": "fused ieee", "states": "trained", "N": 65536, "d": 64, "r": 5, "frac_cos_above_0_99": 1.0, "ms": 23.23, "tflops": 7.4, "max_abs_err": 7.152557373046875e-07, "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition"}
+{"impl": "fused tf32", "states": "trained", "N": 65536, "d": 64, "r": 5, "frac_cos_above_0_99": 1.0, "ms": 1.256, "tflops": 136.7, "max_abs_err": 0.0017684400081634521, "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition"}
+{"impl": "fused bf16", "states": "trained", "N": 65536, "d": 64, "r": 5, "frac_cos_above_0_99": 1.0, "ms": 0.756, "tflops": 227.2, "max_abs_err": 0.014687567949295044, "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition"}

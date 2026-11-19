@@ -1,0 +1,4 @@
+# GPUs this project may use on the course server, by UUID (nvidia-smi index in the comment).
+# GPUs 0-3 are split into MIG instances used by others: never add them here.
+GPU-6c3df329-6760-6320-4613-e6a25973be69 physical GPU 4
+GPU-446f0d79-347a-62cb-f394-be4a9f8b410e physical GPU 5
