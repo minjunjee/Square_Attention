@@ -1,0 +1,108 @@
+== 기준
+  seed 0: success no  | depth 1 at the end 28% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.40, at the end: 0.56 | directions used at step 2000: 16, at the end: 13
+  seed 1: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.36, at the end: 0.56 | directions used at step 2000: 22, at the end: 18
+  seed 2: success no  | depth 1 at the end 98% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.08, at the end: 0.02 | directions used at step 2000: 36, at the end: 51
+  seed 3: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.23, at the end: 0.42 | directions used at step 2000: 25, at the end: 18
+  seed 4: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.26, at the end: 0.46 | directions used at step 2000: 28, at the end: 17
+  seed 5: success no  | depth 1 at the end 99% | depth 1 first at 90%: step 8000 | name code in digit span at step 2000: 0.19, at the end: 0.05 | directions used at step 2000: 30, at the end: 51
+  seed 6: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.24, at the end: 0.35 | directions used at step 2000: 23, at the end: 22
+  seed 7: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.17, at the end: 0.35 | directions used at step 2000: 30, at the end: 19
+  seed 8: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 6000 | name code in digit span at step 2000: 0.21, at the end: 0.04 | directions used at step 2000: 31, at the end: 51
+  seed 9: success no  | depth 1 at the end 96% | depth 1 first at 90%: step 10000 | name code in digit span at step 2000: 0.15, at the end: 0.14 | directions used at step 2000: 29, at the end: 28
+  name code in digit span at step 2,000, median: runs that end with depth 1 >= 90%: 0.17 (n=4); other runs: 0.25 (n=6)
+== lr 3e-4
+  seed 0: success no  | depth 1 at the end 100% | depth 1 first at 90%: step 6000 | name code in digit span at step 2000: 0.23, at the end: 0.03 | directions used at step 2000: 26, at the end: 47
+  seed 1: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.21, at the end: 0.19 | directions used at step 2000: 28, at the end: 28
+  seed 2: success no  | depth 1 at the end 96% | depth 1 first at 90%: step 12000 | name code in digit span at step 2000: 0.21, at the end: 0.02 | directions used at step 2000: 26, at the end: 43
+  seed 3: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.19, at the end: 0.22 | directions used at step 2000: 27, at the end: 28
+  seed 4: success no  | depth 1 at the end 28% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.23, at the end: 0.23 | directions used at step 2000: 29, at the end: 29
+  seed 5: success no  | depth 1 at the end 93% | depth 1 first at 90%: step 10000 | name code in digit span at step 2000: 0.19, at the end: 0.01 | directions used at step 2000: 28, at the end: 44
+  seed 6: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.20, at the end: 0.20 | directions used at step 2000: 28, at the end: 25
+  seed 7: success no  | depth 1 at the end 31% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.19, at the end: 0.18 | directions used at step 2000: 28, at the end: 29
+  seed 8: success yes | depth 1 at the end 99% | depth 1 first at 90%: step 2000 | name code in digit span at step 2000: 0.09, at the end: 0.03 | directions used at step 2000: 35, at the end: 49
+  seed 9: success no  | depth 1 at the end 99% | depth 1 first at 90%: step 8000 | name code in digit span at step 2000: 0.14, at the end: 0.01 | directions used at step 2000: 28, at the end: 44
+  name code in digit span at step 2,000, median: runs that end with depth 1 >= 90%: 0.19 (n=5); other runs: 0.20 (n=5)
+== lr 3e-3
+  seed 0: success no  | depth 1 at the end 28% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.65, at the end: 0.77 | directions used at step 2000: 12, at the end: 6
+  seed 1: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.48, at the end: 0.78 | directions used at step 2000: 16, at the end: 8
+  seed 2: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.45, at the end: 0.80 | directions used at step 2000: 19, at the end: 5
+  seed 3: success no  | depth 1 at the end 28% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.35, at the end: 0.18 | directions used at step 2000: 21, at the end: 16
+  seed 4: success no  | depth 1 at the end 28% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.54, at the end: 0.67 | directions used at step 2000: 16, at the end: 4
+  seed 5: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.23, at the end: 0.29 | directions used at step 2000: 29, at the end: 22
+  seed 6: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.50, at the end: 0.76 | directions used at step 2000: 16, at the end: 5
+  seed 7: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.18, at the end: 0.07 | directions used at step 2000: 27, at the end: 14
+  seed 8: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.46, at the end: 0.79 | directions used at step 2000: 21, at the end: 8
+  seed 9: success no  | depth 1 at the end 31% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.44, at the end: 0.70 | directions used at step 2000: 17, at the end: 5
+  name code in digit span at step 2,000, median: runs that end with depth 1 >= 90%: none; other runs: 0.46 (n=10)
+== 직교 초기화
+  seed 0: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 2000 | name code in digit span at step 2000: 0.06, at the end: 0.05 | directions used at step 2000: 50, at the end: 49
+  seed 1: success no  | depth 1 at the end 86% | depth 1 first at 90%: step 10000 | name code in digit span at step 2000: 0.04, at the end: 0.01 | directions used at step 2000: 50, at the end: 43
+  seed 2: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 2000 | name code in digit span at step 2000: 0.07, at the end: 0.03 | directions used at step 2000: 51, at the end: 51
+  seed 3: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.16, at the end: 0.27 | directions used at step 2000: 47, at the end: 43
+  seed 4: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.08, at the end: 0.05 | directions used at step 2000: 50, at the end: 51
+  seed 5: success no  | depth 1 at the end 95% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.03, at the end: 0.01 | directions used at step 2000: 50, at the end: 51
+  seed 6: success no  | depth 1 at the end 99% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.04, at the end: 0.05 | directions used at step 2000: 50, at the end: 34
+  seed 7: success yes | depth 1 at the end 99% | depth 1 first at 90%: step 2000 | name code in digit span at step 2000: 0.09, at the end: 0.05 | directions used at step 2000: 49, at the end: 52
+  seed 8: success no  | depth 1 at the end 97% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.04, at the end: 0.02 | directions used at step 2000: 49, at the end: 51
+  seed 9: success yes | depth 1 at the end 99% | depth 1 first at 90%: step 8000 | name code in digit span at step 2000: 0.03, at the end: 0.01 | directions used at step 2000: 48, at the end: 50
+  name code in digit span at step 2,000, median: runs that end with depth 1 >= 90%: 0.05 (n=8); other runs: 0.10 (n=2)
+== code 고정
+  seed 0: success no  | depth 1 at the end 87% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.16, at the end: 0.16 | directions used at step 2000: 57, at the end: 57
+  seed 1: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.16, at the end: 0.16 | directions used at step 2000: 57, at the end: 57
+  seed 2: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.15, at the end: 0.15 | directions used at step 2000: 57, at the end: 57
+  seed 3: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.15, at the end: 0.15 | directions used at step 2000: 57, at the end: 57
+  seed 4: success no  | depth 1 at the end 82% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.15, at the end: 0.15 | directions used at step 2000: 57, at the end: 57
+  seed 5: success no  | depth 1 at the end 67% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.15, at the end: 0.15 | directions used at step 2000: 57, at the end: 57
+  seed 6: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.15, at the end: 0.15 | directions used at step 2000: 57, at the end: 57
+  seed 7: success no  | depth 1 at the end 98% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.16, at the end: 0.16 | directions used at step 2000: 57, at the end: 57
+  seed 8: success no  | depth 1 at the end 31% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.16, at the end: 0.16 | directions used at step 2000: 57, at the end: 57
+  seed 9: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.16, at the end: 0.16 | directions used at step 2000: 57, at the end: 57
+  name code in digit span at step 2,000, median: runs that end with depth 1 >= 90%: 0.16 (n=1); other runs: 0.15 (n=9)
+== 넓은 code
+  seed 0: success no  | depth 1 at the end 97% | depth 1 first at 90%: step 6000 | name code in digit span at step 2000: 0.05, at the end: 0.01 | directions used at step 2000: 64, at the end: 82
+  seed 1: success no  | depth 1 at the end 73% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.04, at the end: 0.01 | directions used at step 2000: 73, at the end: 98
+  seed 2: success no  | depth 1 at the end 27% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.14, at the end: 0.18 | directions used at step 2000: 52, at the end: 26
+  seed 3: success no  | depth 1 at the end 95% | depth 1 first at 90%: step 8000 | name code in digit span at step 2000: 0.04, at the end: 0.01 | directions used at step 2000: 70, at the end: 78
+  seed 4: success no  | depth 1 at the end 28% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.20, at the end: 0.37 | directions used at step 2000: 42, at the end: 16
+  seed 5: success no  | depth 1 at the end 98% | depth 1 first at 90%: step 8000 | name code in digit span at step 2000: 0.05, at the end: 0.04 | directions used at step 2000: 69, at the end: 46
+  seed 6: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 8000 | name code in digit span at step 2000: 0.06, at the end: 0.02 | directions used at step 2000: 63, at the end: 100
+  seed 7: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 6000 | name code in digit span at step 2000: 0.17, at the end: 0.27 | directions used at step 2000: 50, at the end: 12
+  seed 8: success no  | depth 1 at the end 91% | depth 1 first at 90%: step 10000 | name code in digit span at step 2000: 0.05, at the end: 0.03 | directions used at step 2000: 71, at the end: 50
+  seed 9: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 12000 | name code in digit span at step 2000: 0.04, at the end: 0.02 | directions used at step 2000: 64, at the end: 91
+  name code in digit span at step 2,000, median: runs that end with depth 1 >= 90%: 0.05 (n=7); other runs: 0.14 (n=3)
+== 이름을 차례로 늘림
+  seed 0: success no  | depth 1 at the end 99% | depth 1 first at 90%: step 16000 | name code in digit span at step 2000: 0.28, at the end: 0.03 | directions used at step 2000: 24, at the end: 52
+  seed 1: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 12000 | name code in digit span at step 2000: 0.25, at the end: 0.05 | directions used at step 2000: 27, at the end: 50
+  seed 2: success no  | depth 1 at the end 96% | depth 1 first at 90%: step 16000 | name code in digit span at step 2000: 0.27, at the end: 0.04 | directions used at step 2000: 24, at the end: 49
+  seed 3: success no  | depth 1 at the end 96% | depth 1 first at 90%: step 16000 | name code in digit span at step 2000: 0.24, at the end: 0.02 | directions used at step 2000: 21, at the end: 49
+  seed 4: success no  | depth 1 at the end 99% | depth 1 first at 90%: step 14000 | name code in digit span at step 2000: 0.30, at the end: 0.04 | directions used at step 2000: 21, at the end: 50
+  seed 5: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 14000 | name code in digit span at step 2000: 0.28, at the end: 0.03 | directions used at step 2000: 23, at the end: 46
+  seed 6: success no  | depth 1 at the end 98% | depth 1 first at 90%: step 14000 | name code in digit span at step 2000: 0.25, at the end: 0.09 | directions used at step 2000: 25, at the end: 31
+  seed 7: success no  | depth 1 at the end 100% | depth 1 first at 90%: step 12000 | name code in digit span at step 2000: 0.26, at the end: 0.01 | directions used at step 2000: 27, at the end: 46
+  seed 8: success no  | depth 1 at the end 98% | depth 1 first at 90%: step 14000 | name code in digit span at step 2000: 0.25, at the end: 0.09 | directions used at step 2000: 27, at the end: 47
+  seed 9: success no  | depth 1 at the end 97% | depth 1 first at 90%: step 16000 | name code in digit span at step 2000: 0.26, at the end: 0.02 | directions used at step 2000: 25, at the end: 45
+  name code in digit span at step 2,000, median: runs that end with depth 1 >= 90%: 0.26 (n=10); other runs: none
+== 자주 나오는 이름
+  seed 0: success no  | depth 1 at the end 27% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.36, at the end: 0.48 | directions used at step 2000: 23, at the end: 18
+  seed 1: success no  | depth 1 at the end 37% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.06, at the end: 0.01 | directions used at step 2000: 36, at the end: 40
+  seed 2: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 2000 | name code in digit span at step 2000: 0.10, at the end: 0.10 | directions used at step 2000: 36, at the end: 39
+  seed 3: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.08, at the end: 0.07 | directions used at step 2000: 33, at the end: 22
+  seed 4: success no  | depth 1 at the end 98% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.12, at the end: 0.03 | directions used at step 2000: 34, at the end: 42
+  seed 5: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.14, at the end: 0.07 | directions used at step 2000: 34, at the end: 42
+  seed 6: success no  | depth 1 at the end 98% | depth 1 first at 90%: step 2000 | name code in digit span at step 2000: 0.09, at the end: 0.08 | directions used at step 2000: 39, at the end: 45
+  seed 7: success no  | depth 1 at the end 98% | depth 1 first at 90%: step 6000 | name code in digit span at step 2000: 0.18, at the end: 0.02 | directions used at step 2000: 30, at the end: 42
+  seed 8: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 2000 | name code in digit span at step 2000: 0.09, at the end: 0.08 | directions used at step 2000: 39, at the end: 43
+  seed 9: success no  | depth 1 at the end 94% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.05, at the end: 0.03 | directions used at step 2000: 37, at the end: 40
+  name code in digit span at step 2,000, median: runs that end with depth 1 >= 90%: 0.10 (n=8); other runs: 0.21 (n=2)
+== 질문 16개
+  seed 0: success no  | depth 1 at the end 29% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.32, at the end: 0.46 | directions used at step 2000: 20, at the end: 16
+  seed 1: success no  | depth 1 at the end 98% | depth 1 first at 90%: step 2000 | name code in digit span at step 2000: 0.06, at the end: 0.03 | directions used at step 2000: 39, at the end: 52
+  seed 2: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 2000 | name code in digit span at step 2000: 0.07, at the end: 0.06 | directions used at step 2000: 39, at the end: 46
+  seed 3: success yes | depth 1 at the end 99% | depth 1 first at 90%: step 4000 | name code in digit span at step 2000: 0.05, at the end: 0.03 | directions used at step 2000: 42, at the end: 51
+  seed 4: success no  | depth 1 at the end 28% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.27, at the end: 0.48 | directions used at step 2000: 30, at the end: 19
+  seed 5: success no  | depth 1 at the end 98% | depth 1 first at 90%: step 2000 | name code in digit span at step 2000: 0.03, at the end: 0.01 | directions used at step 2000: 39, at the end: 50
+  seed 6: success yes | depth 1 at the end 100% | depth 1 first at 90%: step 10000 | name code in digit span at step 2000: 0.06, at the end: 0.01 | directions used at step 2000: 33, at the end: 42
+  seed 7: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.26, at the end: 0.46 | directions used at step 2000: 28, at the end: 17
+  seed 8: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.33, at the end: 0.58 | directions used at step 2000: 24, at the end: 20
+  seed 9: success no  | depth 1 at the end 30% | depth 1 first at 90%: step - | name code in digit span at step 2000: 0.20, at the end: 0.42 | directions used at step 2000: 27, at the end: 20
+  name code in digit span at step 2,000, median: runs that end with depth 1 >= 90%: 0.06 (n=5); other runs: 0.27 (n=5)
