@@ -57,10 +57,16 @@ NAMES = np.arange(LET)                                           # token ids of 
 
 
 # ----------------------------------------------------------------------------- data
-def gen_lines(rng, B, n, D_cap, plan=None):
-    """Assignment lines in program order. plan (B, n): 0 ordinary line, 1 chain A, 2 chain B."""
+def gen_lines(rng, B, n, D_cap, plan=None, names=None, zipf=0.0):
+    """Assignment lines in program order. plan (B, n): 0 ordinary line, 1 chain A, 2 chain B.
+    names: pool to draw the variables from (default: all of NAMES). zipf > 0: a name is drawn with
+    probability proportional to 1 / rank^zipf (rank = position in the pool), still without repeats."""
     ar = np.arange(B)
-    lhs = NAMES[np.argsort(rng.random((B, len(NAMES))), axis=1)[:, :n]]   # every variable is assigned once
+    names = NAMES if names is None else names
+    u = rng.random((B, len(names)))
+    if zipf:                                                          # weighted draw without replacement (exponential clocks)
+        u = -np.log(u) * np.arange(1, len(names) + 1) ** float(zipf)
+    lhs = names[np.argsort(u, axis=1)[:, :n]]                         # every variable is assigned once
     rhs = np.zeros((B, n), np.int64)
     dep = np.zeros((B, n), np.int64)
     val = np.zeros((B, n), np.int64)
@@ -91,7 +97,7 @@ def gen_lines(rng, B, n, D_cap, plan=None):
     return lhs, rhs, dep, val, last
 
 
-def make_batch(rng, B, n=16, m=4, D_cap=4, twin_depth=None, q0_depth=None):
+def make_batch(rng, B, n=16, m=4, D_cap=4, twin_depth=None, q0_depth=None, names=None, zipf=0.0):
     """Returns tokens (B, 4n + 3m), labels (B, m) as token ids, depth of each query (B, m),
     and the number of distinct digits that end a chain (for the guessing level)."""
     ar = np.arange(B)
@@ -103,7 +109,7 @@ def make_batch(rng, B, n=16, m=4, D_cap=4, twin_depth=None, q0_depth=None):
         np.put_along_axis(plan, order[:, :D], 1, axis=1)
         np.put_along_axis(plan, order[:, D:2 * D], 2, axis=1)
         D_cap = max(D_cap, D)
-    lhs, rhs, dep, val, last = gen_lines(rng, B, n, D_cap, plan)
+    lhs, rhs, dep, val, last = gen_lines(rng, B, n, D_cap, plan, names, zipf)
     target = rng.integers(1, D_cap + 1, size=(B, m))                 # wanted depth of each query
     if q0_depth is not None:
         target[:, 0] = q0_depth
@@ -400,6 +406,22 @@ class Tied(nn.Module):
         return unit(torch.einsum("bij,bj->bi", M, q))
 
 
+def code_geom(model):
+    """How the tied layer places its codes (bind task): participation ratio of the name codes (the number
+    of directions they effectively use), root-mean-square cosine between two names, mean absolute cosine
+    between two digits, and the share of a name code that lies inside the span of the digit codes."""
+    with torch.no_grad():
+        C = unit(model.code(model.emb.weight))
+        names, digs = C[torch.as_tensor(NAMES, device=C.device)], C[LET:LET + DIG]
+        off = lambda G: G[~torch.eye(len(G), dtype=torch.bool, device=G.device)]
+        sv = torch.linalg.svdvals(names)
+        Q = torch.linalg.qr(digs.T)[0]
+        return dict(name_dims=round(float((sv ** 2).sum() ** 2 / (sv ** 4).sum()), 1),
+                    name_name_rms=round(float(off(names @ names.T).pow(2).mean().sqrt()), 3),
+                    digit_digit_abs=round(float(off(digs @ digs.T).abs().mean()), 3),
+                    name_in_digit_span=round(float(((names @ Q) ** 2).sum(1).mean()), 3))
+
+
 class CausalDW(nn.Module):
     """Short causal depthwise convolution, as used on q, k, v in DeltaNet implementations."""
 
@@ -591,6 +613,14 @@ def main():
                     help="tied only: add this times the mean entropy of the three mixing weight rows to the loss")
     ap.add_argument("--tap_attn", type=int, default=0,
                     help="tied only: choose each role's token by attention over this many recent tokens instead of fixed weights")
+    ap.add_argument("--code_init", default="default", choices=["default", "orth"],
+                    help="tied only: orth = the shared code map starts as an orthogonal matrix (drawn after all other weights)")
+    ap.add_argument("--freeze_code", type=int, default=0, help="tied only: 1 = the embedding and the code map are not trained")
+    ap.add_argument("--name_curr", default=None,
+                    help="bind task: 'a,b' = train on the first 26 names until fraction a of the steps, then grow the pool "
+                         "geometrically to all names at fraction b. Tests always use all names")
+    ap.add_argument("--name_zipf", type=float, default=0.0,
+                    help="bind task: training programs draw name i with probability proportional to 1 / i^this. Tests stay uniform")
     ap.add_argument("--tag", default="")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--threads", type=int, default=1)
@@ -627,14 +657,24 @@ def main():
     else:
         model = LSTMModel(args.n, args.m, args.dm, args.hid, args.L, line=line, pos=pos)
         lr = args.lr or 2e-3
+    if args.code_init == "orth":                                     # after construction, so every other weight starts as before
+        assert args.model == "tied"
+        nn.init.orthogonal_(model.code.weight)
+    if args.freeze_code:
+        assert args.model == "tied"
+        model.emb.weight.requires_grad_(False)
+        model.code.weight.requires_grad_(False)
+    curr = [float(x) for x in args.name_curr.split(",")] if args.name_curr else None
+    assert curr is None or (args.task == "bind" and len(curr) == 2 and 0 <= curr[0] < curr[1] <= 1 and args.n <= LET)
+    assert not args.name_zipf or args.task == "bind"
     model.to(dev)
     n_params = sum(p.numel() for p in model.parameters())
-    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.01)
+    opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=lr, weight_decay=0.01)
     warm = 300
     sched = torch.optim.lr_scheduler.LambdaLR(
         opt, lambda s: min(1.0, (s + 1) / warm) * 0.5 * (1 + math.cos(math.pi * min(1.0, s / args.steps))))
     t0 = time.time()
-    log, curve = [], []
+    log, curve, geom_curve = [], [], []
     step = 0
     for step in range(1, args.steps + 1):
         if args.task == "lego":
@@ -642,6 +682,12 @@ def main():
         elif args.task == "vt":
             tok, lab, _, _ = make_vt(rng, args.bs, args.n, args.m, args.D_train, name_min=args.name_min, name_max=args.name_max,
                                      prog_len=args.prog_len, n_noise=args.n_noise)
+        elif curr or args.name_zipf:
+            pool = None
+            if curr:                                                   # 26 names, then geometric growth to all names
+                f = min(1.0, max(0.0, (step / args.steps - curr[0]) / (curr[1] - curr[0])))
+                pool = NAMES[:int(round(LET * (len(NAMES) / LET) ** f))]
+            tok, lab, _, _ = make_batch(rng, args.bs, args.n, args.m, args.D_train, names=pool, zipf=args.name_zipf)
         else:
             tok, lab, _, _ = make_batch(rng, args.bs, args.n, args.m, args.D_train)
         r = int(rng.integers(args.r_lo, args.r_hi + 1))
@@ -674,6 +720,9 @@ def main():
                 taps = None
             curve.append((step, ind, deep, taps))
             print("   eval", step, "in-dist", list(ind.values()), "deep", list(deep.values()), "taps", taps, flush=True)
+            if args.model == "tied" and args.task == "bind":
+                geom_curve.append((step, code_geom(model)))
+                print("   geom", step, geom_curve[-1][1], flush=True)
         if time.time() - t0 > args.max_seconds:
             print("time cap reached at step", step, flush=True)
             break
@@ -692,6 +741,8 @@ def main():
                    vt=dict(name_min=args.name_min, name_max=args.name_max, prog_len=args.prog_len, n_noise=args.n_noise) if args.task == "vt" else None,
                    signed=args.signed, pre=args.pre, pre_kind=args.pre_kind if args.pre else None,
                    n_names=args.n_names, deep_max=args.deep_max,
+                   code_init=args.code_init, freeze_code=args.freeze_code, name_curr=args.name_curr, name_zipf=args.name_zipf,
+                   geom_curve=geom_curve, geom=code_geom(model) if args.model == "tied" and args.task == "bind" else None,
                    acc_in_dist=ind, acc_deep=deep, guess_deep=guess, log=log, curve=curve)
     if args.model == "tied":
         with torch.no_grad():
