@@ -1,0 +1,12 @@
+names 512, d=64, seed 0: accuracy by depth 1: 28%, 2: 73%, 3: 81%, 4: 80%
+  questions whose answer is not the longest chain's end digit: 24% of questions; the model answers that digit anyway 80%, correct 8%
+  questions whose answer is that digit: correct 84%
+names 512, d=64, seed 1: accuracy by depth 1: 28%, 2: 72%, 3: 80%, 4: 81%
+  questions whose answer is not the longest chain's end digit: 24% of questions; the model answers that digit anyway 78%, correct 8%
+  questions whose answer is that digit: correct 83%
+names 512, d=64, seed 2: accuracy by depth 1: 98%, 2: 83%, 3: 99%, 4: 89%
+  questions whose answer is not the longest chain's end digit: 24% of questions; the model answers that digit anyway 18%, correct 81%
+  questions whose answer is that digit: correct 96%
+names 48, d=64, seed 0: accuracy by depth 1: 100%, 2: 100%, 3: 100%, 4: 100%
+  questions whose answer is not the longest chain's end digit: 23% of questions; the model answers that digit anyway 0%, correct 100%
+  questions whose answer is that digit: correct 100%
