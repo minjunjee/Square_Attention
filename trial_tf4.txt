@@ -1,0 +1,13 @@
+step 1 loss 3.7499 acc 0.031 t 0s
+step 250 loss 1.3013 acc 0.598 t 42s
+step 500 loss 1.0314 acc 0.625 t 92s
+step 750 loss 0.9513 acc 0.660 t 134s
+step 1000 loss 0.9548 acc 0.641 t 177s
+   eval 1000 in-dist [0.278, 0.708, 0.808, 0.8133] deep [0.166, 0.236, 0.272, 0.34, 0.35, 0.43, 0.426, 0.554] taps None
+step 1250 loss 0.8179 acc 0.742 t 226s
+step 1500 loss 1.0781 acc 0.594 t 269s
+step 1750 loss 0.9627 acc 0.652 t 313s
+step 2000 loss 0.9948 acc 0.602 t 355s
+   eval 2000 in-dist [0.292, 0.72, 0.798, 0.8313] deep [0.17, 0.222, 0.292, 0.356, 0.362, 0.412, 0.464, 0.534] taps None
+step 2250 loss 0.8880 acc 0.656 t 407s
+step 2500 loss 0.9912 acc 0.641 t 449s

@@ -1,0 +1,7 @@
+# --hard_taps 2 lr 0.0003: 1/5 seeds reach 99%, in-dist mean 64.0
+# --hard_taps 2 lr 0.001: 1/5 seeds reach 99%, in-dist mean 61.8
+# --tap_attn 8 lr 0.001: 4/5 seeds reach 99%, in-dist mean 99.7
+# --tap_entropy 0.01 lr 0.001: 3/5 seeds reach 99%, in-dist mean 89.8
+# --tap_entropy 0.1 lr 0.001: 2/5 seeds reach 99%, in-dist mean 91.6
+# original setting, lr 0.001, seeds [0, 1, 2, 3, 4]: 2/5 seeds reach 99%, in-dist mean 93.3
+--tap_attn 8

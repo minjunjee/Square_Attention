@@ -1,0 +1,85 @@
+| state | lines | runs | stuck on the trick | depth 8 >= 90% at r=6 | depth 8 >= 90% at the best r (2..8) | depth 16 >= 90% at the best r |
+|---|---|---|---|---|---|---|
+| 32x32 | 16 | 5 | 2 | 2 | 2 |  |
+| 32x32 | 32 | 5 | 4 | 0 | 0 | 0 |
+| 32x32 | 64 | 5 | 4 | 0 | 0 | 0 |
+| 64x64 | 16 | 10 | 0 | 5 | 7 |  |
+| 64x64 | 32 | 5 | 1 | 3 | 3 | 1 |
+| 64x64 | 64 | 5 | 3 | 0 | 0 | 0 |
+| 64x64 | 128 | 5 | 4 | 0 | 0 | 0 |
+| 128x128 | 16 | 5 | 0 | 2 | 2 |  |
+| 128x128 | 32 | 5 | 1 | 1 | 2 | 1 |
+| 128x128 | 64 | 5 | 2 | 0 | 0 | 0 |
+| 128x128 | 128 | 5 | 2 | 0 | 0 | 0 |
+
+== state 32x32, 16 lines: one step 0, slow 2, partial 1, trick 2
+  seed 0: trick    | training distribution 30, 75, 81, 83 | depth 4: r=6 32%, best 32% at r=3 | depth 8: r=6 45%, best 46% at r=2
+  seed 1: partial  | training distribution 94, 89, 94, 96 | depth 4: r=6 52%, best 60% at r=8 | depth 8: r=6 52%, best 52% at r=6
+  seed 2: slow     | training distribution 100, 100, 100, 100 | depth 4: r=6 99%, best 100% at r=5 | depth 8: r=6 98%, best 98% at r=5
+  seed 3: slow     | training distribution 99, 100, 99, 100 | depth 4: r=6 99%, best 100% at r=5 | depth 8: r=6 96%, best 96% at r=5
+  seed 4: trick    | training distribution 28, 74, 82, 82 | depth 4: r=6 31%, best 32% at r=3 | depth 8: r=6 48%, best 49% at r=3
+== state 32x32, 32 lines: one step 0, slow 0, partial 1, trick 4
+  seed 0: trick    | training distribution 19, 61, 76, 81 | depth 4: r=6 24%, best 24% at r=2 | depth 8: r=6 34%, best 34% at r=2 | depth 16: r=6 50%, best 50% at r=5
+  seed 1: trick    | training distribution 21, 61, 74, 80 | depth 4: r=6 22%, best 22% at r=2 | depth 8: r=6 35%, best 36% at r=2 | depth 16: r=6 50%, best 52% at r=2
+  seed 2: partial  | training distribution 91, 83, 83, 77 | depth 4: r=6 40%, best 41% at r=5 | depth 8: r=6 29%, best 31% at r=4 | depth 16: r=6 23%, best 45% at r=2
+  seed 3: trick    | training distribution 19, 58, 75, 78 | depth 4: r=6 24%, best 24% at r=2 | depth 8: r=6 33%, best 34% at r=2 | depth 16: r=6 50%, best 50% at r=4
+  seed 4: trick    | training distribution 19, 59, 75, 78 | depth 4: r=6 21%, best 22% at r=2 | depth 8: r=6 31%, best 31% at r=2 | depth 16: r=6 49%, best 49% at r=2
+== state 32x32, 64 lines: one step 0, slow 0, partial 1, trick 4
+  seed 0: trick    | training distribution 14, 40, 62, 74 | depth 4: r=6 17%, best 17% at r=2 | depth 8: r=6 23%, best 24% at r=7 | depth 16: r=6 33%, best 34% at r=2 | depth 32: r=6 47%, best 50% at r=3
+  seed 1: trick    | training distribution 15, 43, 63, 72 | depth 4: r=6 14%, best 14% at r=2 | depth 8: r=6 20%, best 20% at r=6 | depth 16: r=6 30%, best 30% at r=3 | depth 32: r=6 52%, best 52% at r=6
+  seed 2: partial  | training distribution 71, 49, 60, 61 | depth 4: r=6 15%, best 15% at r=7 | depth 8: r=6 22%, best 22% at r=5 | depth 16: r=6 32%, best 33% at r=7 | depth 32: r=6 52%, best 54% at r=8
+  seed 3: trick    | training distribution 14, 43, 62, 72 | depth 4: r=6 17%, best 17% at r=2 | depth 8: r=6 19%, best 19% at r=2 | depth 16: r=6 31%, best 31% at r=4 | depth 32: r=6 51%, best 51% at r=2
+  seed 4: trick    | training distribution 17, 42, 62, 72 | depth 4: r=6 18%, best 18% at r=5 | depth 8: r=6 20%, best 20% at r=2 | depth 16: r=6 28%, best 29% at r=3 | depth 32: r=6 46%, best 47% at r=2
+== state 64x64, 16 lines: one step 2, slow 6, partial 2, trick 0
+  seed 0: partial  | training distribution 98, 99, 99, 98 | depth 4: r=6 82%, best 82% at r=6 | depth 8: r=6 65%, best 66% at r=7
+  seed 1: slow     | training distribution 100, 100, 100, 100 | depth 4: r=6 98%, best 99% at r=7 | depth 8: r=6 92%, best 97% at r=7
+  seed 2: one step | training distribution 100, 100, 100, 100 | depth 4: r=6 100%, best 100% at r=4 | depth 8: r=6 95%, best 99% at r=4
+  seed 3: slow     | training distribution 100, 100, 100, 100 | depth 4: r=6 100%, best 100% at r=4 | depth 8: r=6 99%, best 99% at r=5
+  seed 4: one step | training distribution 100, 100, 100, 100 | depth 4: r=6 100%, best 100% at r=4 | depth 8: r=6 71%, best 94% at r=3
+  seed 5: partial  | training distribution 98, 95, 98, 100 | depth 4: r=6 88%, best 99% at r=7 | depth 8: r=6 54%, best 70% at r=8
+  seed 6: slow     | training distribution 100, 99, 98, 99 | depth 4: r=6 98%, best 98% at r=7 | depth 8: r=6 94%, best 100% at r=8
+  seed 7: slow     | training distribution 99, 99, 99, 99 | depth 4: r=6 90%, best 90% at r=6 | depth 8: r=6 67%, best 67% at r=6
+  seed 8: slow     | training distribution 100, 100, 100, 100 | depth 4: r=6 100%, best 100% at r=4 | depth 8: r=6 100%, best 100% at r=5
+  seed 9: slow     | training distribution 100, 100, 100, 100 | depth 4: r=6 99%, best 100% at r=8 | depth 8: r=6 83%, best 100% at r=8
+== state 64x64, 32 lines: one step 0, slow 3, partial 1, trick 1
+  seed 0: trick    | training distribution 19, 61, 76, 80 | depth 4: r=6 22%, best 22% at r=3 | depth 8: r=6 34%, best 34% at r=2 | depth 16: r=6 50%, best 50% at r=2
+  seed 1: slow     | training distribution 100, 100, 99, 100 | depth 4: r=6 100%, best 100% at r=6 | depth 8: r=6 99%, best 99% at r=5 | depth 16: r=6 84%, best 84% at r=6
+  seed 2: partial  | training distribution 87, 66, 72, 74 | depth 4: r=6 34%, best 35% at r=5 | depth 8: r=6 42%, best 43% at r=8 | depth 16: r=6 48%, best 50% at r=7
+  seed 3: slow     | training distribution 100, 100, 100, 99 | depth 4: r=6 100%, best 100% at r=5 | depth 8: r=6 98%, best 98% at r=6 | depth 16: r=6 95%, best 95% at r=6
+  seed 4: slow     | training distribution 100, 100, 100, 100 | depth 4: r=6 100%, best 100% at r=4 | depth 8: r=6 94%, best 96% at r=5 | depth 16: r=6 63%, best 86% at r=5
+== state 64x64, 64 lines: one step 0, slow 0, partial 2, trick 3
+  seed 0: trick    | training distribution 14, 39, 61, 72 | depth 4: r=6 15%, best 15% at r=7 | depth 8: r=6 23%, best 23% at r=6 | depth 16: r=6 33%, best 33% at r=6 | depth 32: r=6 48%, best 48% at r=5
+  seed 1: partial  | training distribution 96, 94, 91, 84 | depth 4: r=6 76%, best 76% at r=6 | depth 8: r=6 51%, best 53% at r=7 | depth 16: r=6 22%, best 26% at r=2 | depth 32: r=6 34%, best 42% at r=2
+  seed 2: partial  | training distribution 82, 79, 77, 74 | depth 4: r=6 59%, best 59% at r=6 | depth 8: r=6 37%, best 42% at r=7 | depth 16: r=6 32%, best 37% at r=8 | depth 32: r=6 48%, best 50% at r=8
+  seed 3: trick    | training distribution 12, 20, 24, 26 | depth 4: r=6 15%, best 18% at r=2 | depth 8: r=6 15%, best 21% at r=2 | depth 16: r=6 18%, best 31% at r=2 | depth 32: r=6 49%, best 51% at r=3
+  seed 4: trick    | training distribution 17, 41, 63, 75 | depth 4: r=6 17%, best 18% at r=3 | depth 8: r=6 20%, best 20% at r=2 | depth 16: r=6 29%, best 30% at r=2 | depth 32: r=6 47%, best 47% at r=2
+== state 64x64, 128 lines: one step 0, slow 0, partial 1, trick 4
+  seed 0: partial  | training distribution 84, 52, 51, 49 | depth 4: r=6 18%, best 19% at r=5 | depth 8: r=6 16%, best 17% at r=2 | depth 16: r=6 17%, best 19% at r=7 | depth 32: r=6 25%, best 25% at r=8
+  seed 1: trick    | training distribution 13, 26, 50, 63 | depth 4: r=6 12%, best 12% at r=2 | depth 8: r=6 15%, best 15% at r=2 | depth 16: r=6 19%, best 19% at r=4 | depth 32: r=6 30%, best 30% at r=4
+  seed 2: trick    | training distribution 13, 28, 46, 60 | depth 4: r=6 11%, best 11% at r=3 | depth 8: r=6 15%, best 16% at r=2 | depth 16: r=6 19%, best 20% at r=3 | depth 32: r=6 29%, best 30% at r=8
+  seed 3: trick    | training distribution 11, 26, 48, 65 | depth 4: r=6 13%, best 13% at r=4 | depth 8: r=6 14%, best 14% at r=2 | depth 16: r=6 20%, best 20% at r=3 | depth 32: r=6 30%, best 30% at r=2
+  seed 4: trick    | training distribution 11, 26, 43, 54 | depth 4: r=6 13%, best 13% at r=2 | depth 8: r=6 15%, best 15% at r=3 | depth 16: r=6 18%, best 18% at r=2 | depth 32: r=6 33%, best 33% at r=2
+== state 128x128, 16 lines: one step 2, slow 1, partial 2, trick 0
+  seed 0: one step | training distribution 100, 100, 100, 100 | depth 4: r=6 100%, best 100% at r=4 | depth 8: r=6 98%, best 99% at r=5
+  seed 1: slow     | training distribution 98, 99, 98, 100 | depth 4: r=6 99%, best 100% at r=7 | depth 8: r=6 67%, best 90% at r=8
+  seed 2: partial  | training distribution 91, 98, 99, 99 | depth 4: r=6 80%, best 80% at r=6 | depth 8: r=6 64%, best 64% at r=6
+  seed 3: one step | training distribution 100, 100, 100, 100 | depth 4: r=6 100%, best 100% at r=4 | depth 8: r=6 100%, best 100% at r=4
+  seed 4: partial  | training distribution 98, 93, 100, 99 | depth 4: r=6 89%, best 96% at r=8 | depth 8: r=6 54%, best 79% at r=8
+== state 128x128, 32 lines: one step 2, slow 1, partial 1, trick 1
+  seed 0: one step | training distribution 100, 100, 99, 100 | depth 4: r=6 100%, best 100% at r=3 | depth 8: r=6 100%, best 100% at r=5 | depth 16: r=6 100%, best 100% at r=5
+  seed 1: slow     | training distribution 99, 100, 100, 100 | depth 4: r=6 98%, best 100% at r=7 | depth 8: r=6 77%, best 98% at r=8 | depth 16: r=6 53%, best 88% at r=8
+  seed 2: trick    | training distribution 19, 36, 44, 46 | depth 4: r=6 22%, best 28% at r=2 | depth 8: r=6 28%, best 34% at r=2 | depth 16: r=6 50%, best 50% at r=6
+  seed 3: partial  | training distribution 95, 92, 96, 98 | depth 4: r=6 85%, best 85% at r=7 | depth 8: r=6 62%, best 78% at r=7 | depth 16: r=6 49%, best 65% at r=8
+  seed 4: one step | training distribution 100, 100, 100, 100 | depth 4: r=6 100%, best 100% at r=4 | depth 8: r=6 23%, best 23% at r=5 | depth 16: r=6 37%, best 38% at r=8
+== state 128x128, 64 lines: one step 0, slow 0, partial 3, trick 2
+  seed 0: partial  | training distribution 98, 88, 84, 89 | depth 4: r=6 68%, best 88% at r=7 | depth 8: r=6 32%, best 73% at r=8 | depth 16: r=6 45%, best 48% at r=8 | depth 32: r=6 48%, best 49% at r=3
+  seed 1: trick    | training distribution 15, 43, 63, 72 | depth 4: r=6 15%, best 15% at r=3 | depth 8: r=6 20%, best 22% at r=2 | depth 16: r=6 31%, best 31% at r=3 | depth 32: r=6 49%, best 50% at r=2
+  seed 2: trick    | training distribution 15, 42, 63, 73 | depth 4: r=6 14%, best 14% at r=8 | depth 8: r=6 18%, best 19% at r=8 | depth 16: r=6 30%, best 30% at r=2 | depth 32: r=6 52%, best 52% at r=2
+  seed 3: partial  | training distribution 95, 84, 82, 77 | depth 4: r=6 51%, best 51% at r=6 | depth 8: r=6 32%, best 32% at r=6 | depth 16: r=6 36%, best 37% at r=5 | depth 32: r=6 46%, best 47% at r=5
+  seed 4: partial  | training distribution 98, 94, 92, 89 | depth 4: r=6 85%, best 86% at r=5 | depth 8: r=6 70%, best 70% at r=6 | depth 16: r=6 47%, best 50% at r=7 | depth 32: r=6 46%, best 50% at r=7
+== state 128x128, 128 lines: one step 0, slow 1, partial 2, trick 2
+  seed 0: trick    | training distribution 13, 24, 41, 54 | depth 4: r=6 16%, best 16% at r=5 | depth 8: r=6 17%, best 17% at r=5 | depth 16: r=6 21%, best 22% at r=2 | depth 32: r=6 27%, best 28% at r=2
+  seed 1: partial  | training distribution 99, 98, 94, 89 | depth 4: r=6 89%, best 89% at r=6 | depth 8: r=6 61%, best 68% at r=7 | depth 16: r=6 28%, best 40% at r=8 | depth 32: r=6 24%, best 29% at r=8
+  seed 2: partial  | training distribution 97, 97, 94, 91 | depth 4: r=6 88%, best 88% at r=6 | depth 8: r=6 67%, best 74% at r=7 | depth 16: r=6 27%, best 36% at r=8 | depth 32: r=6 24%, best 24% at r=6
+  seed 3: slow     | training distribution 99, 98, 98, 97 | depth 4: r=6 94%, best 94% at r=6 | depth 8: r=6 58%, best 64% at r=7 | depth 16: r=6 16%, best 18% at r=8 | depth 32: r=6 20%, best 21% at r=4
+  seed 4: trick    | training distribution 12, 27, 44, 56 | depth 4: r=6 14%, best 14% at r=2 | depth 8: r=6 16%, best 16% at r=2 | depth 16: r=6 19%, best 19% at r=6 | depth 32: r=6 33%, best 33% at r=4

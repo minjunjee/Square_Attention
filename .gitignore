@@ -1,0 +1,14 @@
+# environments and caches
+.venv/
+.venv_tc/
+.venv
+.venv_tc
+__pycache__/
+# trained models and per-run logs stay on the server (results/res_server.jsonl has every run's numbers)
+ckpt/
+ckpt
+logs/*/[0-9]*.log
+locks/
+# which GPUs this machine may use: copy gpu_allowlist.example.txt and edit (see README)
+gpu_allowlist.txt
+.worktrees/

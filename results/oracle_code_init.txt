@@ -1,0 +1,17 @@
+two-chain accuracy of the intended solution, n=16 lines; cells: depth 1 / 4 / 8 (r = 2 / 3 / 6 where noted)
+d=64 names=26 codes=ideal  | D1 r6: 96 | D4 r6: 96 | D8 r6: 89 | D1 r2: 100 | D4 r3: 100
+d=64 names=26 codes=random | D1 r6: 85 | D4 r6: 86 | D8 r6: 72 | D1 r2: 98 | D4 r3: 96
+d=64 names=26 codes=orth   | D1 r6: 85 | D4 r6: 88 | D8 r6: 71 | D1 r2: 98 | D4 r3: 96
+d=64 names=26 codes=init   | D1 r6: 64 | D4 r6: 68 | D8 r6: 52 | D1 r2: 86 | D4 r3: 85
+d=64 names=512 codes=ideal  | D1 r6: 95 | D4 r6: 96 | D8 r6: 90 | D1 r2: 100 | D4 r3: 100
+d=64 names=512 codes=random | D1 r6: 83 | D4 r6: 89 | D8 r6: 70 | D1 r2: 98 | D4 r3: 97
+d=64 names=512 codes=orth   | D1 r6: 84 | D4 r6: 87 | D8 r6: 72 | D1 r2: 98 | D4 r3: 96
+d=64 names=512 codes=init   | D1 r6: 63 | D4 r6: 67 | D8 r6: 49 | D1 r2: 85 | D4 r3: 81
+d=128 names=26 codes=ideal  | D1 r6: 98 | D4 r6: 100 | D8 r6: 95 | D1 r2: 100 | D4 r3: 100
+d=128 names=26 codes=random | D1 r6: 96 | D4 r6: 98 | D8 r6: 88 | D1 r2: 100 | D4 r3: 100
+d=128 names=26 codes=orth   | D1 r6: 85 | D4 r6: 88 | D8 r6: 71 | D1 r2: 98 | D4 r3: 96
+d=128 names=26 codes=init   | D1 r6: 77 | D4 r6: 77 | D8 r6: 60 | D1 r2: 94 | D4 r3: 90
+d=128 names=512 codes=ideal  | D1 r6: 98 | D4 r6: 99 | D8 r6: 95 | D1 r2: 100 | D4 r3: 100
+d=128 names=512 codes=random | D1 r6: 95 | D4 r6: 96 | D8 r6: 89 | D1 r2: 100 | D4 r3: 100
+d=128 names=512 codes=orth   | D1 r6: 84 | D4 r6: 87 | D8 r6: 72 | D1 r2: 98 | D4 r3: 96
+d=128 names=512 codes=init   | D1 r6: 73 | D4 r6: 78 | D8 r6: 59 | D1 r2: 94 | D4 r3: 90

@@ -1,0 +1,12 @@
+== orth_zipf_r6, 10 seeds pooled; rarest name on the queried chain has rank ...
+  depth 2: 1-64: 97.5% of 323 | 65-128: 96.2% of 949 | 129-256: 96.3% of 3893 | 257-512: 96.2% of 14835
+  depth 4: 1-64: 100.0% of 4 | 65-128: 91.4% of 81 | 129-256: 94.8% of 1163 | 257-512: 95.4% of 18752
+  depth 8: 1-64: 0.0% of 0 | 65-128: 0.0% of 0 | 129-256: 86.9% of 61 | 257-512: 81.8% of 19939
+== orth_zipf, 10 seeds pooled; rarest name on the queried chain has rank ...
+  depth 2: 1-64: 97.2% of 323 | 65-128: 95.9% of 949 | 129-256: 97.1% of 3893 | 257-512: 96.7% of 14835
+  depth 4: 1-64: 100.0% of 4 | 65-128: 96.3% of 81 | 129-256: 96.6% of 1163 | 257-512: 96.4% of 18752
+  depth 8: 1-64: 0.0% of 0 | 65-128: 0.0% of 0 | 129-256: 90.2% of 61 | 257-512: 91.2% of 19939
+== orth_curr_r6, 10 seeds pooled; rarest name on the queried chain has rank ...
+  depth 2: 1-64: 99.7% of 323 | 65-128: 97.2% of 949 | 129-256: 97.9% of 3893 | 257-512: 97.6% of 14835
+  depth 4: 1-64: 100.0% of 4 | 65-128: 92.6% of 81 | 129-256: 95.4% of 1163 | 257-512: 96.2% of 18752
+  depth 8: 1-64: 0.0% of 0 | 65-128: 0.0% of 0 | 129-256: 91.8% of 61 | 257-512: 89.3% of 19939

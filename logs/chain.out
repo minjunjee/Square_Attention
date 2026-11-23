@@ -1,0 +1,4 @@
+2026-11-15 09:36:32 e1 done: chosen lr 0.001, 4 of 10 seeds reach 99% at every depth
+2026-11-15 09:36:32 fewer than half the seeds reach 99%: experiment 4 runs first (25 jobs)
+2026-11-15 09:36:32 starting poolA (e2_tf12, 3 per GPU) and poolB (140 jobs, 5 per GPU)
+2026-11-15 21:17:08 poolA and poolB finished
